@@ -4,8 +4,7 @@ LABEL maintainer="matthew@resim.ai"
 
 # Create required ReSim directories
 RUN mkdir -p /tmp/resim/inputs/logs && \
-    mkdir -p /tmp/resim/outputs && \
-    echo "2024-03-21 12:34:56,75.32" > /tmp/resim/inputs/logs/test.log
+    mkdir -p /tmp/resim/outputs
 
 # Copy files
 COPY requirements.txt .
