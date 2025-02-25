@@ -3,7 +3,7 @@ FROM python:3.10-slim
 LABEL maintainer="matthew@resim.ai"
 
 # Create ReSim input directory structure
-RUN mkdir -p /tmp/resim/inputs/logs
+RUN mkdir -p /tmp/resim/inputs/
 
 # Copy hello.py
 COPY hello.py .
