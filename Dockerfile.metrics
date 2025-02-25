@@ -1,0 +1,16 @@
+FROM python:3.10-slim
+
+LABEL maintainer="matthew@resim.ai"
+
+# Create required ReSim directories
+RUN mkdir -p /tmp/resim/inputs/logs && \
+    mkdir -p /tmp/resim/outputs
+
+# Copy files
+COPY requirements.txt .
+COPY metrics_reader.py .
+
+# Install dependencies
+RUN pip install --no-cache-dir -r requirements.txt
+
+CMD ["python", "metrics_reader.py"] 
