@@ -5,11 +5,10 @@ LABEL maintainer="matthew@resim.ai"
 # Create ReSim input directory structure
 RUN mkdir -p /tmp/resim/inputs/
 
+WORKDIR /app
+
 # Copy hello.py
 COPY hello.py .
-
-# Expose the port
-EXPOSE 5000
 
 # Default command
 CMD ["python", "hello.py"]
