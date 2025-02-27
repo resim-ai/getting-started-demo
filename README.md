@@ -14,7 +14,7 @@ This Getting Started guide will highlight the following areas:
 
 ### Contributions
 
-We want to keep this example as simple as possible, while also highlighting the value of ReSim. Feel free to submit a Pull Request if you have any suggestions on how to improve this example.
+We want to keep this example as simple as possible, while also highlighting the value of ReSim. Feel free to submit a Pull Request if you have any suggestions on how to improve it.
 
 
 
