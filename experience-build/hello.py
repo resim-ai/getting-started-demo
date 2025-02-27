@@ -2,12 +2,12 @@ import random
 import logging
 import os
 
-# Ensure the inputs directory exists
-os.makedirs('/tmp/resim/inputs/logs/', exist_ok=True)
+# Ensure the outputs directory exists
+os.makedirs('/tmp/resim/outputs/', exist_ok=True)
 
 # Set up logging
 logging.basicConfig(
-    filename='/tmp/resim/inputs/logs/test.log',
+    filename='/tmp/resim/outputs/test.log',
     level=logging.INFO,
     format='%(asctime)s.%(msecs)03d,%(message)s',
     datefmt='%Y-%m-%d %H:%M:%S'
