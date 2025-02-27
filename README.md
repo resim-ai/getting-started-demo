@@ -2,7 +2,7 @@
 
 ### Purpose of this repository
 
-We want to provide you some very simple examples of how to use ReSim. This repository is provided as a simple, stripped down example so you can walk through how to get ReSim up and running before specifically getting your code ready for ReSim. 
+We want to provide you with some very simple examples of how to use ReSim. This repository is provided as a simple, stripped down example so you can walk through getting ReSim up and running before integrating ReSim with your own system. 
 
 ### Areas to be highlighted
 
