@@ -23,7 +23,7 @@ def read_all_values(filename: str) -> Tuple[list[Timestamp], list[float]]:
             timestamp_str, value_str = line.strip().split(',')
             dt = datetime.strptime(timestamp_str, "%Y-%m-%d %H:%M:%S.%f")
             base_secs = int(dt.timestamp())
-            # Space timestamps 1 second apart
+            # Space timestamps 1 second apart to have a longer timespan
             timestamps.append(Timestamp(secs=base_secs + i, nanos=0))
             values.append(float(value_str))
     return timestamps, values
@@ -54,11 +54,6 @@ def main():
             series=np.array([MetricStatus.PASSED_METRIC_STATUS] * len(values)),
             index_data=timestamps_data
         )
-
-        # - statuses series should be the same length as values series, and have all of them should be PASSED_METRIC_STATUS
-
-        # print(f"Values series: {values_series}")
-        # print(f"Index data: {values_series.index_data}")
         
         # Create and store the metric
         metrics_before_proto_write = (metrics_writer.add_double_over_time_metric("Random Values Over Time") 
@@ -74,10 +69,6 @@ def main():
             .with_doubles_over_time_data([values_series])
             .with_statuses_over_time_data([statuses_series])
         )
-        
-        print(f"Created metric: {metrics_before_proto_write}")
-        # print(f"Metric data: {metrics_before_proto_write.doubles_over_time_data}")
-        # print(f"Failure definitions: {metrics_before_proto_write.failure_definitions}")
         
         # Write and validate metrics
         metrics_proto = metrics_writer.write()

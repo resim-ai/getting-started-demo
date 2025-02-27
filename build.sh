@@ -30,11 +30,11 @@ docker build --platform linux/amd64 -t getting-started-metrics-build -f metrics-
 
 # tag the images
 docker tag getting-started-experience-build public.ecr.aws/resim/open-builds/getting-started-demo:experience-build-${VERSION}
-# docker tag getting-started-metrics-build public.ecr.aws/resim/open-builds/getting-started-demo:metrics-build-${VERSION}
+docker tag getting-started-metrics-build public.ecr.aws/resim/open-builds/getting-started-demo:metrics-build-${VERSION}
 
 # push the images
 docker push public.ecr.aws/resim/open-builds/getting-started-demo:experience-build-${VERSION}
-# docker push public.ecr.aws/resim/open-builds/getting-started-demo:metrics-build-${VERSION}
+docker push public.ecr.aws/resim/open-builds/getting-started-demo:metrics-build-${VERSION}
 
 # create the experience build
 resim builds create \
@@ -47,8 +47,8 @@ resim builds create \
 --auto-create-branch
 
 # create the metrics build
-# resim metrics-build create \
-# --image "public.ecr.aws/resim/open-builds/getting-started-demo:metrics-build-${VERSION}" \
-# --name "Metrics build for Getting Started Experience" \
-# --project "ReSim Getting Started Demo" \
-# --version "metrics-build-${VERSION}"
+resim metrics-build create \
+--image "public.ecr.aws/resim/open-builds/getting-started-demo:metrics-build-${VERSION}" \
+--name "Metrics build for Getting Started Experience" \
+--project "ReSim Getting Started Demo" \
+--version "metrics-build-${VERSION}"
