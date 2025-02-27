@@ -8,8 +8,8 @@ We want to provide you some very simple examples of how to use ReSim. This repos
 
 This Getting Started guide will highlight the following areas:
 
-1. Providing an experience builder that allows you to create a simple scene
-2. Creating a metrics that build that takes the outputs of the experience builder and creates a simple metrics
+1. Providing an experience build that allows you to create a simple scene
+2. Creating a metrics build that takes the outputs of the experience build and creates a simple metric
 3. An example for you to look through to see how things are formatted in order for them to be used in ReSim
 
 ### Contributions
