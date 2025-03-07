@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -exo pipefail
+set -xo pipefail
 
 VERSION=$1
 if [ -z "$VERSION" ]; then
@@ -22,7 +22,6 @@ else
     aws sso login
 fi
 aws ecr-public get-login-password --profile infrastructure --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws/resim
-
 
 # build images
 docker build --platform linux/amd64 -t getting-started-experience-build -f experience-build/Dockerfile experience-build
