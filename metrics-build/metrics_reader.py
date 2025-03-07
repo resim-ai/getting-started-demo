@@ -15,6 +15,8 @@ import numpy as np
 from typing import Tuple
 from resim.metrics.python.metrics_utils import TimestampType
 
+BATCH_METRICS_CONFIG_PATH = Path("/tmp/resim/inputs/batch_metrics_config.json")
+
 def read_all_values(filename: str) -> Tuple[list[Timestamp], list[float]]:
     values = []
     timestamps = []
@@ -30,7 +32,14 @@ def read_all_values(filename: str) -> Tuple[list[Timestamp], list[float]]:
 
 def main():
     print("Starting metrics reader...")
-    
+    if BATCH_METRICS_CONFIG_PATH.exists():
+        print("Running batch metrics...")
+        # we haven't got any :(
+    else:
+        print("Running test metrics...")
+        run_test_metrics()   
+
+def run_test_metrics():
     try:
         metrics_writer = ResimMetricsWriter(uuid.uuid4())
         
@@ -83,8 +92,7 @@ def main():
             metrics_out.write(metrics_proto.metrics_msg.SerializeToString())
             
     except Exception as e:
-        print(f"Error processing metrics: {e}")
-        raise  # Re-raise the exception to ensure the container exits with error
+        raise RuntimeException("Error processing metrics") from e # Re-raise the exception to ensure the container exits with error
     
     print("Completed processing values. Exiting.")
 
