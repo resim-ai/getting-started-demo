@@ -85,9 +85,7 @@ def run_test_metrics():
             .with_statuses_over_time_data([statuses_series])
         )
         
-        # 2. Add histogram
-
-        # Define histogram buckets (e.g., 10 buckets between 0 and 100)
+        # Define histogram buckets
         bucket_size = 10
         buckets = [
             HistogramBucket(i, i + bucket_size)
@@ -128,12 +126,12 @@ def run_test_metrics():
             .with_value(max_value)\
             .with_status(MetricStatus.PASSED_METRIC_STATUS) 
         
-        # Write metrics to the correct location
+        # Write metrics and validate
         metrics_proto = metrics_writer.write()
         validate_job_metrics(metrics_proto.metrics_msg)
         print("Metrics validation passed")
         
-        # Make sure to write to /tmp/resim/outputs/metrics.binproto
+        # Write to binproto
         output_path = Path('/tmp/resim/outputs/metrics.binproto')
         output_path.parent.mkdir(parents=True, exist_ok=True)
         
