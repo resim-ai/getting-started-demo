@@ -2,23 +2,17 @@ import json
 import uuid
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, List, Tuple
+from typing import Dict
 
 import numpy as np
-import plotly.express as px
-import plotly.graph_objects as go
+import plotly.express as px  # type: ignore
+import plotly.graph_objects as go  # type: ignore
 from resim.metrics.fetch_job_metrics import fetch_job_metrics_by_batch
 from resim.metrics.proto.validate_metrics_proto import validate_job_metrics
 from resim.metrics.python.metrics import (
-    BarChartMetric,
     DoubleFailureDefinition,
     DoubleOverTimeMetric,
-    ExternalFileMetricsData,
     HistogramBucket,
-    HistogramMetric,
-    ImageListMetric,
-    ImageMetric,
-    LinePlotMetric,
     MetricImportance,
     MetricStatus,
     PlotlyMetric,
@@ -27,31 +21,14 @@ from resim.metrics.python.metrics import (
     StatesOverTimeMetric,
     TextMetric,
     Timestamp,
-    TimestampType,
 )
 from resim.metrics.python.metrics_writer import ResimMetricsWriter
-
-# from typing import Dict, List, Tuple
-
 
 BATCH_METRICS_CONFIG_PATH = Path("/tmp/resim/inputs/batch_metrics_config.json")
 
 
-def read_all_values(filename: str) -> Tuple[list[Timestamp], list[float]]:
-    values = []
-    timestamps = []
-    with open(filename, "r") as f:
-        for i, line in enumerate(f.readlines()):
-            timestamp_str, value_str = line.strip().split(",")
-            dt = datetime.strptime(timestamp_str, "%Y-%m-%d %H:%M:%S.%f")
-            base_secs = int(dt.timestamp())
-            # Space timestamps 1 second apart to have a longer timespan
-            timestamps.append(Timestamp(secs=base_secs + i, nanos=0))
-            values.append(float(value_str))
-    return timestamps, values
-
-
 def read_flight_data(filename: str) -> dict:
+    """Read and parse flight data from a JSON file."""
     with open(filename, "r") as f:
         return json.load(f)
 
@@ -59,12 +36,13 @@ def read_flight_data(filename: str) -> dict:
 def add_scalar_metrics(metrics_writer: ResimMetricsWriter, flight_data: dict) -> None:
     # Maximum speed metric
     max_speed = max(sample["speed"] for sample in flight_data["samples"])
-    metrics_writer.add_scalar_metric("Maximum Speed").with_description(
-        "Maximum speed achieved during flight"
-    ).with_importance(MetricImportance.HIGH_IMPORTANCE).with_value(max_speed).with_unit(
-        "m/s"
-    ).with_status(
-        MetricStatus.PASSED_METRIC_STATUS
+    (
+        metrics_writer.add_scalar_metric("Maximum Speed")
+        .with_description("Maximum speed achieved during flight")
+        .with_importance(MetricImportance.HIGH_IMPORTANCE)
+        .with_value(max_speed)
+        .with_unit("m/s")
+        .with_status(MetricStatus.PASSED_METRIC_STATUS)
     )
 
 
@@ -80,27 +58,29 @@ def add_double_over_time_metrics(
         speeds.append(sample["speed"])
 
     # Create series data
-    timestamps_data = SeriesMetricsData("Timestamps", series=np.array(timestamps))
+    timestamps_data = SeriesMetricsData("Speed_Timestamps", series=np.array(timestamps))
     speeds_data = SeriesMetricsData(
-        "Speed", series=np.array(speeds), unit="m/s", index_data=timestamps_data
+        "Speed_Values", series=np.array(speeds), unit="m/s", index_data=timestamps_data
     )
     statuses_data = SeriesMetricsData(
-        "Statuses",
+        "Speed_Statuses",
         series=np.array([MetricStatus.PASSED_METRIC_STATUS] * len(speeds)),
         index_data=timestamps_data,
     )
 
+    # Create failure definitions (one per data series)
+    failure_defs = [DoubleFailureDefinition(0.0, 100.0)]
+
     # Add speed over time metric
-    metrics_writer.add_double_over_time_metric("Speed Over Time").with_description(
-        "Speed measurements over time"
-    ).with_importance(MetricImportance.HIGH_IMPORTANCE).with_status(
-        MetricStatus.PASSED_METRIC_STATUS
-    ).with_y_axis_name(
-        "Speed (m/s)"
-    ).with_doubles_over_time_data(
-        [speeds_data]
-    ).with_statuses_over_time_data(
-        [statuses_data]
+    (
+        metrics_writer.add_double_over_time_metric("Speed Over Time")
+        .with_description("Speed measurements over time")
+        .with_importance(MetricImportance.HIGH_IMPORTANCE)
+        .with_status(MetricStatus.PASSED_METRIC_STATUS)
+        .with_y_axis_name("Speed (m/s)")
+        .with_doubles_over_time_data([speeds_data])
+        .with_statuses_over_time_data([statuses_data])
+        .with_failure_definitions(failure_defs)
     )
 
 
@@ -116,84 +96,77 @@ def add_states_over_time_metrics(
         states.append(sample["state"])
 
     # Create series data
-    timestamps_data = SeriesMetricsData("Timestamps", series=np.array(timestamps))
+    timestamps_data = SeriesMetricsData(
+        "States_Timestamps", series=np.array(timestamps)
+    )
     states_data = SeriesMetricsData(
-        "States", series=np.array(states), index_data=timestamps_data
+        "States_Values", series=np.array(states), index_data=timestamps_data
     )
     statuses_data = SeriesMetricsData(
-        "Statuses",
+        "States_Statuses",
         series=np.array([MetricStatus.PASSED_METRIC_STATUS] * len(states)),
         index_data=timestamps_data,
     )
 
-    # Get unique states
-    states_set = set(sample["state"] for sample in flight_data["samples"])
-    failure_states = {"Warning"}  # Example: consider Warning states as failures
+    # Get unique states and ensure they're strings
+    states_set = {str(sample["state"]) for sample in flight_data["samples"]}
+    failure_states: set[str] = set()  # No failure states for now
 
     # Add states over time metric
-    metrics_writer.add_states_over_time_metric(
-        "Flight States Over Time"
-    ).with_description("Flight state transitions over time").with_importance(
-        MetricImportance.HIGH_IMPORTANCE
-    ).with_status(
-        MetricStatus.PASSED_METRIC_STATUS
-    ).with_states_over_time_data(
-        [states_data]
-    ).with_statuses_over_time_data(
-        [statuses_data]
-    ).with_states_set(
-        states_set
-    ).with_failure_states(
-        failure_states
+    (
+        metrics_writer.add_states_over_time_metric("Flight States Over Time")
+        .with_description("Flight state transitions over time")
+        .with_importance(MetricImportance.HIGH_IMPORTANCE)
+        .with_status(MetricStatus.PASSED_METRIC_STATUS)
+        .with_states_over_time_data([states_data])
+        .with_statuses_over_time_data([statuses_data])
+        .with_states_set(states_set)
+        .with_failure_states(failure_states)
+        .with_legend_series_names(["Flight State"])
     )
 
 
 def add_line_plot_metrics(
     metrics_writer: ResimMetricsWriter, flight_data: dict
 ) -> None:
-    # Extract position data
-    timestamps = []
-    x_positions = []
-    y_positions = []
-    z_positions = []
+    # Extract position data and convert timestamps to seconds for x-axis
+    x_values = []  # Time in seconds
+    y_values = []  # X position values
+
+    start_time = datetime.fromisoformat(
+        flight_data["samples"][0]["timestamp"].replace("Z", "+00:00")
+    )
 
     for sample in flight_data["samples"]:
         dt = datetime.fromisoformat(sample["timestamp"].replace("Z", "+00:00"))
-        timestamps.append(Timestamp(secs=int(dt.timestamp()), nanos=0))
-        x_positions.append(sample["position"]["x"])
-        y_positions.append(sample["position"]["y"])
-        z_positions.append(sample["position"]["z"])
+        # Convert to seconds from start
+        seconds_from_start = (dt - start_time).total_seconds()
+        x_values.append(seconds_from_start)
+        y_values.append(sample["position"]["x"])
 
-    # Create series data
-    timestamps_data = SeriesMetricsData("Timestamps", series=np.array(timestamps))
-    x_data = SeriesMetricsData(
-        "X Position", series=np.array(x_positions), unit="m", index_data=timestamps_data
-    )
-    y_data = SeriesMetricsData(
-        "Y Position", series=np.array(y_positions), unit="m", index_data=timestamps_data
-    )
-    z_data = SeriesMetricsData(
-        "Z Position", series=np.array(z_positions), unit="m", index_data=timestamps_data
-    )
+    # Create series data using doubles for both axes
+    x_data = SeriesMetricsData("Position_Time", series=np.array(x_values), unit="s")
+    y_data = SeriesMetricsData("Position_Values", series=np.array(y_values), unit="m")
     statuses_data = SeriesMetricsData(
-        "Statuses",
-        series=np.array([MetricStatus.PASSED_METRIC_STATUS] * len(timestamps)),
-        index_data=timestamps_data,
+        "Position_Statuses",
+        series=np.array([MetricStatus.PASSED_METRIC_STATUS] * len(x_values)),
     )
 
     # Add position over time metric
     metric = (
-        metrics_writer.add_line_plot_metric("Position Over Time")
-        .with_description("3D position over time")
+        metrics_writer.add_line_plot_metric("X Position Over Time")
+        .with_description("X-axis position over time")
         .with_importance(MetricImportance.HIGH_IMPORTANCE)
         .with_status(MetricStatus.PASSED_METRIC_STATUS)
-        .with_x_axis_name("Time")
-        .with_y_axis_name("Position (m)")
+        .with_x_axis_name("Time (s)")
+        .with_y_axis_name("X Position (m)")
+        .with_legend_series_names(["Position"])
     )
-    metric.x_doubles_data = [timestamps_data, timestamps_data, timestamps_data]
-    metric.y_doubles_data = [x_data, y_data, z_data]
-    metric.statuses_data = [statuses_data, statuses_data, statuses_data]
-    metric.with_legend_series_names(["X", "Y", "Z"])
+
+    # Set the data using direct attribute assignment
+    metric.x_doubles_data = [x_data]
+    metric.y_doubles_data = [y_data]
+    metric.statuses_data = [statuses_data]
 
 
 def add_histogram_metrics(
@@ -203,9 +176,12 @@ def add_histogram_metrics(
     speeds = [sample["speed"] for sample in flight_data["samples"]]
 
     # Create series data
-    speeds_data = SeriesMetricsData("Speeds", series=np.array(speeds), unit="m/s")
+    speeds_data = SeriesMetricsData(
+        "Histogram_Speed_Values", series=np.array(speeds), unit="m/s"
+    )
     statuses_data = SeriesMetricsData(
-        "Statuses", series=np.array([MetricStatus.PASSED_METRIC_STATUS] * len(speeds))
+        "Histogram_Speed_Statuses",
+        series=np.array([MetricStatus.PASSED_METRIC_STATUS] * len(speeds)),
     )
 
     # Define histogram buckets
@@ -216,20 +192,16 @@ def add_histogram_metrics(
     ]
 
     # Add speed histogram metric
-    metrics_writer.add_histogram_metric("Speed Distribution").with_description(
-        "Distribution of speeds during flight"
-    ).with_importance(MetricImportance.MEDIUM_IMPORTANCE).with_status(
-        MetricStatus.PASSED_METRIC_STATUS
-    ).with_values_data(
-        speeds_data
-    ).with_statuses_data(
-        statuses_data
-    ).with_buckets(
-        buckets
-    ).with_lower_bound(
-        0.0
-    ).with_upper_bound(
-        max_speed
+    (
+        metrics_writer.add_histogram_metric("Speed Distribution")
+        .with_description("Distribution of speeds during flight")
+        .with_importance(MetricImportance.MEDIUM_IMPORTANCE)
+        .with_status(MetricStatus.PASSED_METRIC_STATUS)
+        .with_values_data(speeds_data)
+        .with_statuses_data(statuses_data)
+        .with_buckets(buckets)
+        .with_lower_bound(0.0)
+        .with_upper_bound(max_speed)
     )
 
 
@@ -240,6 +212,11 @@ def add_plotly_metrics(metrics_writer: ResimMetricsWriter, flight_data: dict) ->
     z = [sample["position"]["z"] for sample in flight_data["samples"]]
     states = [sample["state"] for sample in flight_data["samples"]]
 
+    # Map states to numeric values for coloring
+    unique_states = list(set(states))
+    state_to_num = {state: i for i, state in enumerate(unique_states)}
+    color_values = [state_to_num[state] for state in states]
+
     fig = go.Figure(
         data=[
             go.Scatter3d(
@@ -247,7 +224,17 @@ def add_plotly_metrics(metrics_writer: ResimMetricsWriter, flight_data: dict) ->
                 y=y,
                 z=z,
                 mode="markers+lines",
-                marker=dict(size=6, color=states, colorscale="Viridis", opacity=0.8),
+                marker=dict(
+                    size=6,
+                    color=color_values,
+                    colorscale="Viridis",
+                    opacity=0.8,
+                    colorbar=dict(
+                        title="State",
+                        ticktext=unique_states,
+                        tickvals=list(range(len(unique_states))),
+                    ),
+                ),
             )
         ]
     )
@@ -257,12 +244,13 @@ def add_plotly_metrics(metrics_writer: ResimMetricsWriter, flight_data: dict) ->
         scene=dict(xaxis_title="X (m)", yaxis_title="Y (m)", zaxis_title="Z (m)"),
     )
 
-    metrics_writer.add_plotly_metric("3D Flight Path").with_description(
-        "Interactive 3D visualization of the flight path"
-    ).with_importance(MetricImportance.HIGH_IMPORTANCE).with_status(
-        MetricStatus.PASSED_METRIC_STATUS
-    ).with_plotly_data(
-        str(fig.to_json())
+    # Add plotly metric
+    (
+        metrics_writer.add_plotly_metric("3D Flight Path")
+        .with_description("Interactive 3D visualization of the flight path")
+        .with_importance(MetricImportance.HIGH_IMPORTANCE)
+        .with_status(MetricStatus.PASSED_METRIC_STATUS)
+        .with_plotly_data(str(fig.to_json()))
     )
 
 
@@ -279,12 +267,13 @@ def add_text_metrics(metrics_writer: ResimMetricsWriter, flight_data: dict) -> N
 - Units: {flight_data['metadata']['units']}
 """
 
-    metrics_writer.add_text_metric("Flight Summary").with_description(
-        "Summary of the flight data"
-    ).with_importance(MetricImportance.MEDIUM_IMPORTANCE).with_status(
-        MetricStatus.PASSED_METRIC_STATUS
-    ).with_text(
-        summary
+    # Add text metric
+    (
+        metrics_writer.add_text_metric("Flight Summary")
+        .with_description("Summary of the flight data")
+        .with_importance(MetricImportance.MEDIUM_IMPORTANCE)
+        .with_status(MetricStatus.PASSED_METRIC_STATUS)
+        .with_text(summary)
     )
 
 
@@ -303,20 +292,50 @@ def run_test_metrics():
         # Read flight data
         flight_data = read_flight_data("/tmp/resim/inputs/logs/test.log")
 
-        # Create metrics writer
+        # Create metrics writer with a unique ID for test metrics
         metrics_writer = ResimMetricsWriter(uuid.uuid4())
 
+        # Keep track of metric names we've added
+        added_metrics = set()
+
+        def log_metric_addition(name: str) -> None:
+            if name in added_metrics:
+                print(f"WARNING: Metric name '{name}' is being added again!")
+            else:
+                print(f"Adding metric: {name}")
+                added_metrics.add(name)
+
         # Add all types of metrics
+        log_metric_addition("Maximum Speed")
         add_scalar_metrics(metrics_writer, flight_data)
+
+        log_metric_addition("Speed Over Time")
         add_double_over_time_metrics(metrics_writer, flight_data)
+
+        log_metric_addition("Flight States Over Time")
         add_states_over_time_metrics(metrics_writer, flight_data)
+
+        log_metric_addition("X Position Over Time")
         add_line_plot_metrics(metrics_writer, flight_data)
+
+        log_metric_addition("Speed Distribution")
         add_histogram_metrics(metrics_writer, flight_data)
+
+        log_metric_addition("3D Flight Path")
         add_plotly_metrics(metrics_writer, flight_data)
+
+        log_metric_addition("Flight Summary")
         add_text_metrics(metrics_writer, flight_data)
 
         # Write and validate metrics
+        print("\nValidating metrics...")
         metrics_proto = metrics_writer.write()
+
+        # Debug: Print all metric names in the proto
+        print("\nActual metrics in proto:")
+        for metric in metrics_proto.metrics_msg.metrics_data:
+            print(f"Proto metric name: '{metric.name}'")
+
         validate_job_metrics(metrics_proto.metrics_msg)
 
         # Write to file
@@ -328,6 +347,7 @@ def run_test_metrics():
         print(f"Wrote metrics to {output_path}")
 
     except Exception as e:
+        print(f"Error details: {str(e)}")  # Add detailed error logging
         raise RuntimeError("Error processing metrics") from e
 
     print("Completed processing metrics. Exiting.")
@@ -339,7 +359,7 @@ def run_batch_metrics():
         with open(BATCH_METRICS_CONFIG_PATH, "r") as f:
             config = json.load(f)
 
-        # Create metrics writer
+        # Create metrics writer with a unique ID for batch metrics
         metrics_writer = ResimMetricsWriter(uuid.uuid4())
 
         # Get all test metrics for this batch
