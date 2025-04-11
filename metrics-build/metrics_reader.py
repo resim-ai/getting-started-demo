@@ -2,10 +2,8 @@ import json
 import uuid
 from datetime import datetime
 from pathlib import Path
-from typing import Dict
 
 import numpy as np
-import plotly.express as px  # type: ignore
 import plotly.graph_objects as go  # type: ignore
 from resim.metrics.fetch_job_metrics import fetch_job_metrics_by_batch
 from resim.metrics.proto.validate_metrics_proto import validate_job_metrics
@@ -34,6 +32,7 @@ def read_flight_data(filename: str) -> dict:
 
 
 def add_scalar_metrics(metrics_writer: ResimMetricsWriter, flight_data: dict) -> None:
+    """Add scalar metrics including maximum speed achieved during flight."""
     # Maximum speed metric
     max_speed = max(sample["speed"] for sample in flight_data["samples"])
     (
@@ -49,6 +48,7 @@ def add_scalar_metrics(metrics_writer: ResimMetricsWriter, flight_data: dict) ->
 def add_double_over_time_metrics(
     metrics_writer: ResimMetricsWriter, flight_data: dict
 ) -> None:
+    """Add time series metrics for speed measurements over time."""
     # Extract speed data over time
     timestamps = []
     speeds = []
@@ -87,6 +87,7 @@ def add_double_over_time_metrics(
 def add_states_over_time_metrics(
     metrics_writer: ResimMetricsWriter, flight_data: dict
 ) -> None:
+    """Add time series metrics for flight state transitions."""
     # Extract state data over time
     timestamps = []
     states = []
@@ -129,6 +130,7 @@ def add_states_over_time_metrics(
 def add_line_plot_metrics(
     metrics_writer: ResimMetricsWriter, flight_data: dict
 ) -> None:
+    """Add line plot metrics showing X position over time."""
     # Extract position data and convert timestamps to seconds for x-axis
     x_values = []  # Time in seconds
     y_values = []  # X position values
@@ -172,6 +174,7 @@ def add_line_plot_metrics(
 def add_histogram_metrics(
     metrics_writer: ResimMetricsWriter, flight_data: dict
 ) -> None:
+    """Create and add a histogram showing the distribution of flight speeds."""
     # Extract speed data for histogram
     speeds = [sample["speed"] for sample in flight_data["samples"]]
 
@@ -206,6 +209,7 @@ def add_histogram_metrics(
 
 
 def add_plotly_metrics(metrics_writer: ResimMetricsWriter, flight_data: dict) -> None:
+    """Create and add a 3D visualization of the flight path using Plotly."""
     # Create a 3D scatter plot of the flight path
     x = [sample["position"]["x"] for sample in flight_data["samples"]]
     y = [sample["position"]["y"] for sample in flight_data["samples"]]
@@ -278,6 +282,7 @@ def add_text_metrics(metrics_writer: ResimMetricsWriter, flight_data: dict) -> N
 
 
 def main():
+    """Entry point for the metrics reader script."""
     print("Starting metrics reader...")
     if BATCH_METRICS_CONFIG_PATH.exists():
         print("Running batch metrics...")
@@ -288,6 +293,7 @@ def main():
 
 
 def run_test_metrics():
+    """Process and generate metrics for a single test run."""
     try:
         # Read flight data
         flight_data = read_flight_data("/tmp/resim/inputs/logs/test.log")
@@ -354,6 +360,7 @@ def run_test_metrics():
 
 
 def run_batch_metrics():
+    """Process and generate aggregate metrics for a batch of tests."""
     try:
         # Read batch config
         with open(BATCH_METRICS_CONFIG_PATH, "r") as f:
