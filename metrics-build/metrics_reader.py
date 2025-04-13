@@ -7,7 +7,7 @@ import numpy as np
 import plotly.graph_objects as go  # type: ignore
 from resim.metrics.fetch_job_metrics import fetch_job_metrics_by_batch
 from resim.metrics.proto.validate_metrics_proto import validate_job_metrics
-from resim.metrics.python.metrics import (
+from resim.metrics.python.metrics import (  # type: ignore[attr-defined, import]
     DoubleFailureDefinition,
     DoubleOverTimeMetric,
     HistogramBucket,
@@ -73,10 +73,28 @@ def add_speed_over_time_plot(
     # Extract speed data over time
     timestamps = []
     speeds = []
+    statuses = []
+    has_error = False
+    has_warning = False
+
     for sample in flight_data["samples"]:
         dt = datetime.fromisoformat(sample["timestamp"].replace("Z", "+00:00"))
         timestamps.append(dt)
         speeds.append(sample["speed"])
+
+        # Track status from flight data
+        if sample["status"] == "Error":
+            has_error = True
+            statuses.append(
+                MetricStatus.FAIL_BLOCK_METRIC_STATUS
+            )  # Using FAIL_BLOCK_METRIC_STATUS for errors
+        elif sample["status"] == "Warning":
+            has_warning = True
+            statuses.append(
+                MetricStatus.FAIL_WARN_METRIC_STATUS
+            )  # Using FAIL_WARN_METRIC_STATUS for warnings
+        else:
+            statuses.append(MetricStatus.PASSED_METRIC_STATUS)
 
     # Create Plotly figure
     fig = go.Figure()
@@ -100,12 +118,98 @@ def add_speed_over_time_plot(
         template="plotly_white",
     )
 
+    # Determine overall metric status
+    overall_status = (
+        MetricStatus.FAIL_BLOCK_METRIC_STATUS  # Using FAIL_BLOCK_METRIC_STATUS for errors
+        if has_error
+        else (
+            MetricStatus.FAIL_WARN_METRIC_STATUS  # Using FAIL_WARN_METRIC_STATUS for warnings
+            if has_warning
+            else MetricStatus.PASSED_METRIC_STATUS
+        )
+    )
+
     # Add plotly metric
     (
         metrics_writer.add_plotly_metric("Speed Over Time")
-        .with_description("Speed measurements over time")
+        .with_description("Speed measurements over time with status from flight data")
         .with_importance(MetricImportance.HIGH_IMPORTANCE)
-        .with_status(MetricStatus.PASSED_METRIC_STATUS)
+        .with_status(overall_status)
+        .with_plotly_data(str(fig.to_json()))
+    )
+
+
+def add_altitude_warning_plot(
+    metrics_writer: ResimMetricsWriter, flight_data: dict
+) -> None:
+    """Add altitude plot with status from flight data."""
+    # Extract altitude data over time
+    timestamps = []
+    altitudes = []
+    statuses = []
+    has_error = False
+    has_warning = False
+
+    for sample in flight_data["samples"]:
+        dt = datetime.fromisoformat(sample["timestamp"].replace("Z", "+00:00"))
+        timestamps.append(dt)
+        altitudes.append(sample["position"]["z"])
+
+        # Track status from flight data
+        if sample["status"] == "Error":
+            has_error = True
+            statuses.append(
+                MetricStatus.FAIL_BLOCK_METRIC_STATUS
+            )  # Using FAIL_BLOCK_METRIC_STATUS for errors
+        elif sample["status"] == "Warning":
+            has_warning = True
+            statuses.append(
+                MetricStatus.FAIL_WARN_METRIC_STATUS
+            )  # Using FAIL_WARN_METRIC_STATUS for warnings
+        else:
+            statuses.append(MetricStatus.PASSED_METRIC_STATUS)
+
+    # Create Plotly figure
+    fig = go.Figure()
+    fig.add_trace(
+        go.Scatter(
+            x=timestamps,
+            y=altitudes,
+            mode="lines+markers",
+            name="Altitude",
+            line=dict(color="blue"),
+            marker=dict(size=6),
+        )
+    )
+
+    # Update layout
+    fig.update_layout(
+        title="Altitude Over Time",
+        xaxis_title="Time",
+        yaxis_title="Altitude (m)",
+        showlegend=True,
+        template="plotly_white",
+    )
+
+    # Determine overall metric status
+    overall_status = (
+        MetricStatus.FAIL_BLOCK_METRIC_STATUS  # Using FAIL_BLOCK_METRIC_STATUS for errors
+        if has_error
+        else (
+            MetricStatus.FAIL_WARN_METRIC_STATUS  # Using FAIL_WARN_METRIC_STATUS for warnings
+            if has_warning
+            else MetricStatus.PASSED_METRIC_STATUS
+        )
+    )
+
+    # Add plotly metric
+    (
+        metrics_writer.add_plotly_metric("Altitude Over Time")
+        .with_description(
+            "Altitude measurements over time with status from flight data"
+        )
+        .with_importance(MetricImportance.MEDIUM_IMPORTANCE)
+        .with_status(overall_status)
         .with_plotly_data(str(fig.to_json()))
     )
 
@@ -371,6 +475,9 @@ def run_test_metrics():
 
         log_metric_addition("Speed Over Time")
         add_speed_over_time_plot(metrics_writer, flight_data)
+
+        log_metric_addition("Altitude Over Time")
+        add_altitude_warning_plot(metrics_writer, flight_data)
 
         log_metric_addition("Flight States Over Time")
         add_states_over_time_plot(metrics_writer, flight_data)
