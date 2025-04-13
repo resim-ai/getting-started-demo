@@ -7,8 +7,8 @@ RUN mkdir -p /tmp/resim/inputs/
 
 WORKDIR /app
 
-# Copy hello.py
-COPY drone_flight.py .
+# Copy experiences folder
+COPY -r /experiences/ ./
 
 # Default command
-CMD ["python", "drone_flight.py"]
+CMD ["python", "sim_run.py"]
