@@ -538,37 +538,168 @@ def run_batch_metrics():
             project_id=uuid.UUID(config["projectID"]),
         )
 
-        # Calculate batch-level metrics
-        all_max_values = []
-        print(test_metrics)
-        for test_metric in test_metrics.values():
-            # Extract max value from each test's metrics
-            for metric in test_metric.metrics:
-                print(metric.name)
-                if metric.name == "Maximum Random Value":
-                    scalar_metric: ScalarMetric = metric  # type: ignore
-                    all_max_values.append(scalar_metric.value)
+        # Initialize batch-level statistics
+        flight_durations = []
+        max_speeds = []
+        error_counts = []
+        warning_counts = []
+        success_counts = []
+        flight_paths = []
 
-        # Create batch-level metrics
-        if all_max_values:
-            batch_max = max(all_max_values)
-            batch_avg = sum(all_max_values) / len(all_max_values)
+        # Process each flight log
+        for test_id, test_metric in test_metrics.items():
+            # Read flight data from the appropriate log file
+            log_path = f"/tmp/resim/inputs/logs/{test_id}/flight_log.json"
+            flight_data = read_flight_data(log_path)
+
+            # Calculate flight duration
+            start_time = datetime.fromisoformat(
+                flight_data["samples"][0]["timestamp"].replace("Z", "+00:00")
+            )
+            end_time = datetime.fromisoformat(
+                flight_data["samples"][-1]["timestamp"].replace("Z", "+00:00")
+            )
+            duration = (end_time - start_time).total_seconds()
+            flight_durations.append(duration)
+
+            # Track max speed
+            max_speed = max(sample["speed"] for sample in flight_data["samples"])
+            max_speeds.append(max_speed)
+
+            # Count status occurrences
+            error_count = sum(
+                1 for sample in flight_data["samples"] if sample["status"] == "Error"
+            )
+            warning_count = sum(
+                1 for sample in flight_data["samples"] if sample["status"] == "Warning"
+            )
+            success_count = sum(
+                1 for sample in flight_data["samples"] if sample["status"] == "OK"
+            )
+
+            error_counts.append(error_count)
+            warning_counts.append(warning_count)
+            success_counts.append(success_count)
+
+            # Store flight path for visualization
+            flight_paths.append(
+                {
+                    "x": [sample["position"]["x"] for sample in flight_data["samples"]],
+                    "y": [sample["position"]["y"] for sample in flight_data["samples"]],
+                    "z": [sample["position"]["z"] for sample in flight_data["samples"]],
+                    "name": f"Flight {test_id}",  # Use test ID as name
+                }
+            )
+
+        # Calculate batch-level metrics
+        if flight_durations:
+            # Flight duration statistics
+            avg_duration = sum(flight_durations) / len(flight_durations)
+            max_duration = max(flight_durations)
+            min_duration = min(flight_durations)
+
+            # Speed statistics
+            avg_max_speed = sum(max_speeds) / len(max_speeds)
+            highest_speed = max(max_speeds)
+
+            # Status statistics
+            total_errors = sum(error_counts)
+            total_warnings = sum(warning_counts)
+            total_successes = sum(success_counts)
+            total_samples = total_errors + total_warnings + total_successes
+
+            # Success rate
+            success_rate = (
+                (total_successes / total_samples) * 100 if total_samples > 0 else 0
+            )
 
             # Add batch-level scalar metrics
             (
-                metrics_writer.add_scalar_metric("Batch Maximum Value")
-                .with_description("Maximum value across all tests")
+                metrics_writer.add_scalar_metric("Average Flight Duration")
+                .with_description("Average duration across all flights")
                 .with_importance(MetricImportance.HIGH_IMPORTANCE)
-                .with_value(batch_max)
+                .with_value(avg_duration)
+                .with_unit("seconds")
                 .with_status(MetricStatus.PASSED_METRIC_STATUS)
             )
 
             (
-                metrics_writer.add_scalar_metric("Batch Average Maximum")
-                .with_description("Average of maximum values across tests")
-                .with_importance(MetricImportance.MEDIUM_IMPORTANCE)
-                .with_value(batch_avg)
+                metrics_writer.add_scalar_metric("Highest Recorded Speed")
+                .with_description("Maximum speed achieved across all flights")
+                .with_importance(MetricImportance.HIGH_IMPORTANCE)
+                .with_value(highest_speed)
+                .with_unit("m/s")
                 .with_status(MetricStatus.PASSED_METRIC_STATUS)
+            )
+
+            (
+                metrics_writer.add_scalar_metric("Overall Success Rate")
+                .with_description("Percentage of successful flight states")
+                .with_importance(MetricImportance.HIGH_IMPORTANCE)
+                .with_value(success_rate)
+                .with_unit("%")
+                .with_status(
+                    MetricStatus.FAIL_BLOCK_METRIC_STATUS
+                    if success_rate < 90
+                    else (
+                        MetricStatus.FAIL_WARN_METRIC_STATUS
+                        if success_rate < 95
+                        else MetricStatus.PASSED_METRIC_STATUS
+                    )
+                )
+            )
+
+            # Create a 3D visualization of all flight paths
+            fig = go.Figure()
+            for path in flight_paths:
+                fig.add_trace(
+                    go.Scatter3d(
+                        x=path["x"],
+                        y=path["y"],
+                        z=path["z"],
+                        mode="lines+markers",
+                        name=path["name"],
+                        marker=dict(size=4),
+                        line=dict(width=2),
+                    )
+                )
+
+            fig.update_layout(
+                title="Flight Paths Comparison",
+                scene=dict(
+                    xaxis_title="X (m)", yaxis_title="Y (m)", zaxis_title="Z (m)"
+                ),
+                template="plotly_white",
+            )
+
+            # Add the 3D visualization as a metric
+            (
+                metrics_writer.add_plotly_metric("Flight Paths Comparison")
+                .with_description("3D visualization comparing all flight paths")
+                .with_importance(MetricImportance.HIGH_IMPORTANCE)
+                .with_status(MetricStatus.PASSED_METRIC_STATUS)
+                .with_plotly_data(str(fig.to_json()))
+            )
+
+            # Add a summary text metric
+            summary = f"""# Flight Batch Summary
+- Total Flights: {len(flight_durations)}
+- Average Duration: {avg_duration:.2f} seconds
+- Longest Flight: {max_duration:.2f} seconds
+- Shortest Flight: {min_duration:.2f} seconds
+- Highest Speed: {highest_speed:.2f} m/s
+- Average Max Speed: {avg_max_speed:.2f} m/s
+- Total Errors: {total_errors}
+- Total Warnings: {total_warnings}
+- Success Rate: {success_rate:.1f}%
+"""
+
+            (
+                metrics_writer.add_text_metric("Batch Summary")
+                .with_description("Summary of all flight data")
+                .with_importance(MetricImportance.HIGH_IMPORTANCE)
+                .with_status(MetricStatus.PASSED_METRIC_STATUS)
+                .with_text(summary)
             )
 
         # Write and validate metrics
@@ -579,7 +710,7 @@ def run_batch_metrics():
         output_path = Path("/tmp/resim/outputs/metrics.binproto")
         with output_path.open("wb") as metrics_out:
             metrics_out.write(metrics_proto.metrics_msg.SerializeToString())
-        print(f"Batch metrics: Wrote metrics to {output_path}")  # Debug log
+        print(f"Batch metrics: Wrote metrics to {output_path}")
 
     except Exception as e:
         raise RuntimeError("Error processing batch metrics") from e
