@@ -26,9 +26,30 @@ BATCH_METRICS_CONFIG_PATH = Path("/tmp/resim/inputs/batch_metrics_config.json")
 
 
 def read_flight_data(filename: str) -> dict:
-    """Read and parse flight data from a JSON file."""
-    with open(filename, "r") as f:
-        return json.load(f)
+    """Read and parse flight data from a JSON file.
+
+    Args:
+        filename: Path to the flight log JSON file
+
+    Returns:
+        dict: Parsed flight data containing metadata and samples
+    """
+    input_path = Path("/tmp/resim/inputs") / filename
+    if not input_path.exists():
+        raise FileNotFoundError(f"Flight log file not found at {input_path}")
+
+    with open(input_path, "r") as f:
+        data = json.load(f)
+
+    # Validate the expected structure
+    if not isinstance(data, dict):
+        raise ValueError("Flight log must be a JSON object")
+    if "metadata" not in data:
+        raise ValueError("Flight log must contain metadata")
+    if "samples" not in data:
+        raise ValueError("Flight log must contain samples")
+
+    return data
 
 
 def add_scalar_metrics(metrics_writer: ResimMetricsWriter, flight_data: dict) -> None:
@@ -45,7 +66,7 @@ def add_scalar_metrics(metrics_writer: ResimMetricsWriter, flight_data: dict) ->
     )
 
 
-def add_double_over_time_metrics(
+def add_speed_over_time_plot(
     metrics_writer: ResimMetricsWriter, flight_data: dict
 ) -> None:
     """Add time series metrics for speed measurements over time."""
@@ -54,37 +75,42 @@ def add_double_over_time_metrics(
     speeds = []
     for sample in flight_data["samples"]:
         dt = datetime.fromisoformat(sample["timestamp"].replace("Z", "+00:00"))
-        timestamps.append(Timestamp(secs=int(dt.timestamp()), nanos=0))
+        timestamps.append(dt)
         speeds.append(sample["speed"])
 
-    # Create series data
-    timestamps_data = SeriesMetricsData("Speed_Timestamps", series=np.array(timestamps))
-    speeds_data = SeriesMetricsData(
-        "Speed_Values", series=np.array(speeds), unit="m/s", index_data=timestamps_data
-    )
-    statuses_data = SeriesMetricsData(
-        "Speed_Statuses",
-        series=np.array([MetricStatus.PASSED_METRIC_STATUS] * len(speeds)),
-        index_data=timestamps_data,
+    # Create Plotly figure
+    fig = go.Figure()
+    fig.add_trace(
+        go.Scatter(
+            x=timestamps,
+            y=speeds,
+            mode="lines+markers",
+            name="Speed",
+            line=dict(color="blue"),
+            marker=dict(size=6),
+        )
     )
 
-    # Create failure definitions (one per data series)
-    failure_defs = [DoubleFailureDefinition(0.0, 100.0)]
+    # Update layout
+    fig.update_layout(
+        title="Speed Over Time",
+        xaxis_title="Time",
+        yaxis_title="Speed (m/s)",
+        showlegend=True,
+        template="plotly_white",
+    )
 
-    # Add speed over time metric
+    # Add plotly metric
     (
-        metrics_writer.add_double_over_time_metric("Speed Over Time")
+        metrics_writer.add_plotly_metric("Speed Over Time")
         .with_description("Speed measurements over time")
         .with_importance(MetricImportance.HIGH_IMPORTANCE)
         .with_status(MetricStatus.PASSED_METRIC_STATUS)
-        .with_y_axis_name("Speed (m/s)")
-        .with_doubles_over_time_data([speeds_data])
-        .with_statuses_over_time_data([statuses_data])
-        .with_failure_definitions(failure_defs)
+        .with_plotly_data(str(fig.to_json()))
     )
 
 
-def add_states_over_time_metrics(
+def add_states_over_time_plot(
     metrics_writer: ResimMetricsWriter, flight_data: dict
 ) -> None:
     """Add time series metrics for flight state transitions."""
@@ -93,41 +119,60 @@ def add_states_over_time_metrics(
     states = []
     for sample in flight_data["samples"]:
         dt = datetime.fromisoformat(sample["timestamp"].replace("Z", "+00:00"))
-        timestamps.append(Timestamp(secs=int(dt.timestamp()), nanos=0))
+        timestamps.append(dt)
         states.append(sample["state"])
 
-    # Create series data
-    timestamps_data = SeriesMetricsData(
-        "States_Timestamps", series=np.array(timestamps)
-    )
-    states_data = SeriesMetricsData(
-        "States_Values", series=np.array(states), index_data=timestamps_data
-    )
-    statuses_data = SeriesMetricsData(
-        "States_Statuses",
-        series=np.array([MetricStatus.PASSED_METRIC_STATUS] * len(states)),
-        index_data=timestamps_data,
+    # Create a mapping of states to numeric values for coloring
+    unique_states = list(set(states))
+    state_to_num = {state: i for i, state in enumerate(unique_states)}
+    color_values = [state_to_num[state] for state in states]
+
+    # Create Plotly figure
+    fig = go.Figure()
+    fig.add_trace(
+        go.Scatter(
+            x=timestamps,
+            y=color_values,
+            mode="markers",
+            name="State",
+            marker=dict(
+                size=10,
+                color=color_values,
+                colorscale="Viridis",
+                colorbar=dict(
+                    title="State",
+                    ticktext=unique_states,
+                    tickvals=list(range(len(unique_states))),
+                ),
+            ),
+        )
     )
 
-    # Get unique states and ensure they're strings
-    states_set = {str(sample["state"]) for sample in flight_data["samples"]}
-    failure_states: set[str] = set()  # No failure states for now
+    # Update layout
+    fig.update_layout(
+        title="Flight States Over Time",
+        xaxis_title="Time",
+        yaxis_title="State",
+        showlegend=True,
+        template="plotly_white",
+        yaxis=dict(
+            ticktext=unique_states,
+            tickvals=list(range(len(unique_states))),
+            range=[-0.5, len(unique_states) - 0.5],
+        ),
+    )
 
-    # Add states over time metric
+    # Add plotly metric
     (
-        metrics_writer.add_states_over_time_metric("Flight States Over Time")
+        metrics_writer.add_plotly_metric("Flight States Over Time")
         .with_description("Flight state transitions over time")
         .with_importance(MetricImportance.HIGH_IMPORTANCE)
         .with_status(MetricStatus.PASSED_METRIC_STATUS)
-        .with_states_over_time_data([states_data])
-        .with_statuses_over_time_data([statuses_data])
-        .with_states_set(states_set)
-        .with_failure_states(failure_states)
-        .with_legend_series_names(["Flight State"])
+        .with_plotly_data(str(fig.to_json()))
     )
 
 
-def add_line_plot_metrics(
+def add_position_over_time_plot(
     metrics_writer: ResimMetricsWriter, flight_data: dict
 ) -> None:
     """Add line plot metrics showing X position over time."""
@@ -146,65 +191,74 @@ def add_line_plot_metrics(
         x_values.append(seconds_from_start)
         y_values.append(sample["position"]["x"])
 
-    # Create series data using doubles for both axes
-    x_data = SeriesMetricsData("Position_Time", series=np.array(x_values), unit="s")
-    y_data = SeriesMetricsData("Position_Values", series=np.array(y_values), unit="m")
-    statuses_data = SeriesMetricsData(
-        "Position_Statuses",
-        series=np.array([MetricStatus.PASSED_METRIC_STATUS] * len(x_values)),
+    # Create Plotly figure
+    fig = go.Figure()
+    fig.add_trace(
+        go.Scatter(
+            x=x_values,
+            y=y_values,
+            mode="lines+markers",
+            name="X Position",
+            line=dict(color="blue"),
+            marker=dict(size=6),
+        )
     )
 
-    # Add position over time metric
-    metric = (
-        metrics_writer.add_line_plot_metric("X Position Over Time")
+    # Update layout
+    fig.update_layout(
+        title="X Position Over Time",
+        xaxis_title="Time (s)",
+        yaxis_title="X Position (m)",
+        showlegend=True,
+        template="plotly_white",
+    )
+
+    # Add plotly metric
+    (
+        metrics_writer.add_plotly_metric("X Position Over Time")
         .with_description("X-axis position over time")
         .with_importance(MetricImportance.HIGH_IMPORTANCE)
         .with_status(MetricStatus.PASSED_METRIC_STATUS)
-        .with_x_axis_name("Time (s)")
-        .with_y_axis_name("X Position (m)")
-        .with_legend_series_names(["Position"])
+        .with_plotly_data(str(fig.to_json()))
     )
 
-    # Set the data using direct attribute assignment
-    metric.x_doubles_data = [x_data]
-    metric.y_doubles_data = [y_data]
-    metric.statuses_data = [statuses_data]
 
-
-def add_histogram_metrics(
+def add_speed_distribution_plot(
     metrics_writer: ResimMetricsWriter, flight_data: dict
 ) -> None:
     """Create and add a histogram showing the distribution of flight speeds."""
     # Extract speed data for histogram
     speeds = [sample["speed"] for sample in flight_data["samples"]]
 
-    # Create series data
-    speeds_data = SeriesMetricsData(
-        "Histogram_Speed_Values", series=np.array(speeds), unit="m/s"
-    )
-    statuses_data = SeriesMetricsData(
-        "Histogram_Speed_Statuses",
-        series=np.array([MetricStatus.PASSED_METRIC_STATUS] * len(speeds)),
+    # Create Plotly figure
+    fig = go.Figure()
+    fig.add_trace(
+        go.Histogram(
+            x=speeds,
+            name="Speed Distribution",
+            nbinsx=10,
+            marker_color="blue",
+            opacity=0.75,
+        )
     )
 
-    # Define histogram buckets
-    max_speed = max(speeds)
-    bucket_size = max_speed / 10  # 10 buckets
-    buckets = [
-        HistogramBucket(i * bucket_size, (i + 1) * bucket_size) for i in range(10)
-    ]
+    # Update layout
+    fig.update_layout(
+        title="Speed Distribution",
+        xaxis_title="Speed (m/s)",
+        yaxis_title="Count",
+        showlegend=True,
+        template="plotly_white",
+        bargap=0.1,
+    )
 
-    # Add speed histogram metric
+    # Add plotly metric
     (
-        metrics_writer.add_histogram_metric("Speed Distribution")
+        metrics_writer.add_plotly_metric("Speed Distribution")
         .with_description("Distribution of speeds during flight")
         .with_importance(MetricImportance.MEDIUM_IMPORTANCE)
         .with_status(MetricStatus.PASSED_METRIC_STATUS)
-        .with_values_data(speeds_data)
-        .with_statuses_data(statuses_data)
-        .with_buckets(buckets)
-        .with_lower_bound(0.0)
-        .with_upper_bound(max_speed)
+        .with_plotly_data(str(fig.to_json()))
     )
 
 
@@ -296,7 +350,7 @@ def run_test_metrics():
     """Process and generate metrics for a single test run."""
     try:
         # Read flight data
-        flight_data = read_flight_data("/tmp/resim/inputs/logs/test.log")
+        flight_data = read_flight_data("/tmp/resim/inputs/logs/flight_log.json")
 
         # Create metrics writer with a unique ID for test metrics
         metrics_writer = ResimMetricsWriter(uuid.uuid4())
@@ -316,16 +370,16 @@ def run_test_metrics():
         add_scalar_metrics(metrics_writer, flight_data)
 
         log_metric_addition("Speed Over Time")
-        add_double_over_time_metrics(metrics_writer, flight_data)
+        add_speed_over_time_plot(metrics_writer, flight_data)
 
         log_metric_addition("Flight States Over Time")
-        add_states_over_time_metrics(metrics_writer, flight_data)
+        add_states_over_time_plot(metrics_writer, flight_data)
 
         log_metric_addition("X Position Over Time")
-        add_line_plot_metrics(metrics_writer, flight_data)
+        add_position_over_time_plot(metrics_writer, flight_data)
 
         log_metric_addition("Speed Distribution")
-        add_histogram_metrics(metrics_writer, flight_data)
+        add_speed_distribution_plot(metrics_writer, flight_data)
 
         log_metric_addition("3D Flight Path")
         add_plotly_metrics(metrics_writer, flight_data)
