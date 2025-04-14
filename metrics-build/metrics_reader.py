@@ -454,7 +454,7 @@ def run_test_metrics():
     """Process and generate metrics for a single test run."""
     try:
         # Read flight data
-        flight_data = read_flight_data("/tmp/resim/inputs/logs/flight_log.json")
+        flight_data = read_flight_data("/tmp/resim/inputs/processed_flight_log.json")
 
         # Create metrics writer with a unique ID for test metrics
         metrics_writer = ResimMetricsWriter(uuid.uuid4())

@@ -8,7 +8,7 @@ os.makedirs("/tmp/resim/outputs/", exist_ok=True)
 
 # Set up logging
 logging.basicConfig(
-    filename="/tmp/resim/outputs/test.log",
+    filename="/tmp/resim/outputs/processed_flight_log.json",
     level=logging.INFO,
     format="%(message)s",  # We'll just log the raw JSON data
     datefmt="%Y-%m-%d %H:%M:%S",
@@ -32,7 +32,7 @@ def main():
         return
 
     # Write the flight data to the output log
-    with open("/tmp/resim/outputs/test.log", "w") as f:
+    with open("/tmp/resim/outputs/processed_flight_log.json", "w") as f:
         json.dump(flight_data, f, indent=2)
 
     print("Completed writing flight data. Exiting.")
