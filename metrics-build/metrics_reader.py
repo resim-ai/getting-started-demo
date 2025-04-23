@@ -8,18 +8,9 @@ import plotly.graph_objects as go  # type: ignore
 from resim.metrics.fetch_job_metrics import fetch_job_metrics_by_batch
 from resim.metrics.proto.validate_metrics_proto import validate_job_metrics
 from resim.metrics.python.metrics import (  # type: ignore[attr-defined, import]
-    DoubleFailureDefinition,
-    DoubleOverTimeMetric,
-    HistogramBucket,
-    MetricImportance,
-    MetricStatus,
-    PlotlyMetric,
-    ScalarMetric,
-    SeriesMetricsData,
-    StatesOverTimeMetric,
-    TextMetric,
-    Timestamp,
-)
+    DoubleFailureDefinition, DoubleOverTimeMetric, HistogramBucket,
+    MetricImportance, MetricStatus, PlotlyMetric, ScalarMetric,
+    SeriesMetricsData, StatesOverTimeMetric, TextMetric, Timestamp)
 from resim.metrics.python.metrics_writer import ResimMetricsWriter
 
 BATCH_METRICS_CONFIG_PATH = Path("/tmp/resim/inputs/batch_metrics_config.json")
@@ -34,7 +25,7 @@ def read_flight_data(filename: str) -> dict:
     Returns:
         dict: Parsed flight data containing metadata and samples
     """
-    input_path = Path("/tmp/resim/inputs") / filename
+    input_path = Path("/tmp/resim/inputs/logs") / filename
     if not input_path.exists():
         raise FileNotFoundError(f"Flight log file not found at {input_path}")
 
@@ -454,7 +445,9 @@ def run_test_metrics():
     """Process and generate metrics for a single test run."""
     try:
         # Read flight data
-        flight_data = read_flight_data("/tmp/resim/inputs/processed_flight_log.json")
+        # The experience writes to /tmp/resim/outputs/processed_flight_log.json
+        # This file should be mounted by the platform into the metrics container's /tmp/resim/inputs directory
+        flight_data = read_flight_data("processed_flight_log.json")
 
         # Create metrics writer with a unique ID for test metrics
         metrics_writer = ResimMetricsWriter(uuid.uuid4())
