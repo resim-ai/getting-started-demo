@@ -542,8 +542,7 @@ def run_batch_metrics():
         # Process each flight log
         for test_id, test_metric in test_metrics.items():
             # Read flight data from the appropriate log file
-            log_path = f"/tmp/resim/inputs/logs/{test_id}/flight_log.json"
-            flight_data = read_flight_data(log_path)
+            flight_data = read_flight_data("processed_flight_log.json")
 
             # Calculate flight duration
             start_time = datetime.fromisoformat(
