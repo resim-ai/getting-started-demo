@@ -430,6 +430,23 @@ def add_text_metrics(metrics_writer: ResimMetricsWriter, flight_data: dict) -> N
     )
 
 
+class FlightDataCollector:
+    """Collects flight data from multiple experiences for batch processing."""
+    def __init__(self):
+        self.flight_data = {}  # test_id -> flight_data mapping
+
+    def add_flight_data(self, test_id: str, flight_data: dict):
+        """Add flight data for a specific test."""
+        self.flight_data[test_id] = flight_data
+
+    def get_all_flight_data(self):
+        """Get all collected flight data."""
+        return self.flight_data
+
+# Create a global collector instance
+flight_data_collector = FlightDataCollector()
+
+
 def main():
     """Entry point for the metrics reader script."""
     print("Starting metrics reader...")
@@ -445,9 +462,11 @@ def run_test_metrics():
     """Process and generate metrics for a single test run."""
     try:
         # Read flight data
-        # The experience writes to /tmp/resim/outputs/processed_flight_log.json
-        # This file should be mounted by the platform into the metrics container's /tmp/resim/inputs directory
         flight_data = read_flight_data("processed_flight_log.json")
+
+        # Add this flight data to the collector
+        test_id = str(uuid.uuid4())  # Generate a unique ID for this test
+        flight_data_collector.add_flight_data(test_id, flight_data)
 
         # Create metrics writer with a unique ID for test metrics
         metrics_writer = ResimMetricsWriter(uuid.uuid4())
@@ -516,20 +535,15 @@ def run_test_metrics():
 def run_batch_metrics():
     """Process and generate aggregate metrics for a batch of tests."""
     try:
-        # Read batch config
-        with open(BATCH_METRICS_CONFIG_PATH, "r") as f:
-            config = json.load(f)
+        # Get all collected flight data
+        all_flight_data = flight_data_collector.get_all_flight_data()
+        
+        if not all_flight_data:
+            print("No flight data collected for batch processing")
+            return
 
         # Create metrics writer with a unique ID for batch metrics
         metrics_writer = ResimMetricsWriter(uuid.uuid4())
-
-        # Get all test metrics for this batch
-        test_metrics = fetch_job_metrics_by_batch(
-            token=config["authToken"],
-            api_url=config["apiURL"],
-            batch_id=uuid.UUID(config["batchID"]),
-            project_id=uuid.UUID(config["projectID"]),
-        )
 
         # Initialize batch-level statistics
         flight_durations = []
@@ -539,49 +553,50 @@ def run_batch_metrics():
         success_counts = []
         flight_paths = []
 
-        # Process each flight log
-        for test_id, test_metric in test_metrics.items():
-            # Read flight data from the appropriate log file
-            flight_data = read_flight_data("processed_flight_log.json")
+        # Process each test's flight data
+        for test_id, flight_data in all_flight_data.items():
+            try:
+                # Calculate flight duration
+                start_time = datetime.fromisoformat(
+                    flight_data["samples"][0]["timestamp"].replace("Z", "+00:00")
+                )
+                end_time = datetime.fromisoformat(
+                    flight_data["samples"][-1]["timestamp"].replace("Z", "+00:00")
+                )
+                duration = (end_time - start_time).total_seconds()
+                flight_durations.append(duration)
 
-            # Calculate flight duration
-            start_time = datetime.fromisoformat(
-                flight_data["samples"][0]["timestamp"].replace("Z", "+00:00")
-            )
-            end_time = datetime.fromisoformat(
-                flight_data["samples"][-1]["timestamp"].replace("Z", "+00:00")
-            )
-            duration = (end_time - start_time).total_seconds()
-            flight_durations.append(duration)
+                # Track max speed
+                max_speed = max(sample["speed"] for sample in flight_data["samples"])
+                max_speeds.append(max_speed)
 
-            # Track max speed
-            max_speed = max(sample["speed"] for sample in flight_data["samples"])
-            max_speeds.append(max_speed)
+                # Count status occurrences
+                error_count = sum(
+                    1 for sample in flight_data["samples"] if sample["status"] == "Error"
+                )
+                warning_count = sum(
+                    1 for sample in flight_data["samples"] if sample["status"] == "Warning"
+                )
+                success_count = sum(
+                    1 for sample in flight_data["samples"] if sample["status"] == "OK"
+                )
 
-            # Count status occurrences
-            error_count = sum(
-                1 for sample in flight_data["samples"] if sample["status"] == "Error"
-            )
-            warning_count = sum(
-                1 for sample in flight_data["samples"] if sample["status"] == "Warning"
-            )
-            success_count = sum(
-                1 for sample in flight_data["samples"] if sample["status"] == "OK"
-            )
+                error_counts.append(error_count)
+                warning_counts.append(warning_count)
+                success_counts.append(success_count)
 
-            error_counts.append(error_count)
-            warning_counts.append(warning_count)
-            success_counts.append(success_count)
-
-            # Store flight path for visualization
-            flight_paths.append(
-                {
-                    "x": [sample["position"]["x"] for sample in flight_data["samples"]],
-                    "y": [sample["position"]["y"] for sample in flight_data["samples"]],
-                    "z": [sample["position"]["z"] for sample in flight_data["samples"]],
-                    "name": f"Flight {test_id}",  # Use test ID as name
-                }
-            )
+                # Store flight path for visualization
+                flight_paths.append(
+                    {
+                        "x": [sample["position"]["x"] for sample in flight_data["samples"]],
+                        "y": [sample["position"]["y"] for sample in flight_data["samples"]],
+                        "z": [sample["position"]["z"] for sample in flight_data["samples"]],
+                        "name": f"Flight {test_id}",
+                    }
+                )
+            except Exception as e:
+                print(f"Error processing test {test_id}: {str(e)}")
+                continue
 
         # Calculate batch-level metrics
         if flight_durations:
