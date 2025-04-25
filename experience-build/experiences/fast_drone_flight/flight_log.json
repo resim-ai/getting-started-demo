@@ -137,14 +137,14 @@
             "timestamp": "2024-03-18T10:00:18",
             "speed": 44.7,
             "state": "Moving",
-            "status": "Warning",
+            "status": "OK",
             "position": {"x": 357.6, "y": 0.0, "z": 89.4}
         },
         {
             "timestamp": "2024-03-18T10:00:19",
             "speed": 44.7,
             "state": "Moving",
-            "status": "Warning",
+            "status": "OK",
             "position": {"x": 402.3, "y": 0.0, "z": 89.4}
         },
         {
