@@ -5,7 +5,8 @@ from pathlib import Path
 
 import numpy as np
 import plotly.graph_objects as go  # type: ignore
-from resim.metrics.fetch_job_metrics import fetch_job_metrics_by_batch
+from resim.metrics.fetch_job_metrics import (fetch_job_metrics,
+                                             fetch_job_metrics_by_batch)
 from resim.metrics.proto.validate_metrics_proto import validate_job_metrics
 from resim.metrics.python.metrics import (  # type: ignore[attr-defined, import]
     DoubleFailureDefinition, DoubleOverTimeMetric, HistogramBucket,
@@ -430,23 +431,6 @@ def add_text_metrics(metrics_writer: ResimMetricsWriter, flight_data: dict) -> N
     )
 
 
-class FlightDataCollector:
-    """Collects flight data from multiple experiences for batch processing."""
-    def __init__(self):
-        self.flight_data = {}  # test_id -> flight_data mapping
-
-    def add_flight_data(self, test_id: str, flight_data: dict):
-        """Add flight data for a specific test."""
-        self.flight_data[test_id] = flight_data
-
-    def get_all_flight_data(self):
-        """Get all collected flight data."""
-        return self.flight_data
-
-# Create a global collector instance
-flight_data_collector = FlightDataCollector()
-
-
 def main():
     """Entry point for the metrics reader script."""
     print("Starting metrics reader...")
@@ -463,10 +447,6 @@ def run_test_metrics():
     try:
         # Read flight data
         flight_data = read_flight_data("processed_flight_log.json")
-
-        # Add this flight data to the collector
-        test_id = str(uuid.uuid4())  # Generate a unique ID for this test
-        flight_data_collector.add_flight_data(test_id, flight_data)
 
         # Create metrics writer with a unique ID for test metrics
         metrics_writer = ResimMetricsWriter(uuid.uuid4())
@@ -535,106 +515,104 @@ def run_test_metrics():
 def run_batch_metrics():
     """Process and generate aggregate metrics for a batch of tests."""
     try:
-        # Get all collected flight data
-        all_flight_data = flight_data_collector.get_all_flight_data()
-        
-        if not all_flight_data:
-            print("No flight data collected for batch processing")
-            return
+        # Read batch config
+        with open("/tmp/resim/inputs/batch_metrics_config.json", "r", encoding="utf-8") as metrics_config_file:
+            metrics_config = json.load(metrics_config_file)
 
-        # Create metrics writer with a unique ID for batch metrics
-        metrics_writer = ResimMetricsWriter(uuid.uuid4())
+        token = metrics_config["authToken"]
+        api_url = metrics_config["apiURL"]
+        batch_id = metrics_config["batchID"]
+        project_id = metrics_config["projectID"]
 
-        # Initialize batch-level statistics
-        flight_durations = []
+        # Fetch all metrics for the batch (returns a dict: job_id -> metrics proto object)
+        job_to_metrics = fetch_job_metrics_by_batch(
+            token=token,
+            api_url=api_url,
+            project_id=project_id,
+            batch_id=batch_id,
+        )
+
         max_speeds = []
         error_counts = []
         warning_counts = []
         success_counts = []
         flight_paths = []
 
-        # Process each test's flight data
-        for test_id, flight_data in all_flight_data.items():
+        for test_id, metrics_proto in job_to_metrics.items():
             try:
-                # Calculate flight duration
-                start_time = datetime.fromisoformat(
-                    flight_data["samples"][0]["timestamp"].replace("Z", "+00:00")
-                )
-                end_time = datetime.fromisoformat(
-                    flight_data["samples"][-1]["timestamp"].replace("Z", "+00:00")
-                )
-                duration = (end_time - start_time).total_seconds()
-                flight_durations.append(duration)
+                # Example: Extract max speed from scalar metrics
+                max_speed = None
+                for metric in metrics_proto.metrics_msg.metrics_data:
+                    if metric.name == "Maximum Speed":
+                        max_speed = metric.value
+                    # You can extract other metrics here as needed
 
-                # Track max speed
-                max_speed = max(sample["speed"] for sample in flight_data["samples"])
-                max_speeds.append(max_speed)
+                if max_speed is not None:
+                    max_speeds.append(max_speed)
 
                 # Count status occurrences
                 error_count = sum(
-                    1 for sample in flight_data["samples"] if sample["status"] == "Error"
+                    1 for metric in metrics_proto.metrics_msg.metrics_data if metric.status == MetricStatus.FAIL_BLOCK_METRIC_STATUS
                 )
                 warning_count = sum(
-                    1 for sample in flight_data["samples"] if sample["status"] == "Warning"
+                    1 for metric in metrics_proto.metrics_msg.metrics_data if metric.status == MetricStatus.FAIL_WARN_METRIC_STATUS
                 )
                 success_count = sum(
-                    1 for sample in flight_data["samples"] if sample["status"] == "OK"
+                    1 for metric in metrics_proto.metrics_msg.metrics_data if metric.status == MetricStatus.PASSED_METRIC_STATUS
                 )
 
                 error_counts.append(error_count)
                 warning_counts.append(warning_count)
                 success_counts.append(success_count)
 
-                # Store flight path for visualization
-                flight_paths.append(
-                    {
-                        "x": [sample["position"]["x"] for sample in flight_data["samples"]],
-                        "y": [sample["position"]["y"] for sample in flight_data["samples"]],
-                        "z": [sample["position"]["z"] for sample in flight_data["samples"]],
-                        "name": f"Flight {test_id}",
-                    }
-                )
+                # Example: Store flight path for visualization if you have X/Y/Z metrics
+                x = [metric.value for metric in metrics_proto.metrics_msg.metrics_data if metric.name == "X Position Over Time"]
+                y = [metric.value for metric in metrics_proto.metrics_msg.metrics_data if metric.name == "Y Position Over Time"]
+                z = [metric.value for metric in metrics_proto.metrics_msg.metrics_data if metric.name == "Altitude Over Time"]
+                if x and y and z:
+                    flight_paths.append(
+                        {
+                            "x": x,
+                            "y": y,
+                            "z": z,
+                            "name": f"Flight {test_id}",
+                        }
+                    )
             except Exception as e:
                 print(f"Error processing test {test_id}: {str(e)}")
                 continue
 
         # Calculate batch-level metrics
-        if flight_durations:
-            # Flight duration statistics
-            avg_duration = sum(flight_durations) / len(flight_durations)
-            max_duration = max(flight_durations)
-            min_duration = min(flight_durations)
-
-            # Speed statistics
+        if max_speeds:
             avg_max_speed = sum(max_speeds) / len(max_speeds)
             highest_speed = max(max_speeds)
 
-            # Status statistics
             total_errors = sum(error_counts)
             total_warnings = sum(warning_counts)
             total_successes = sum(success_counts)
             total_samples = total_errors + total_warnings + total_successes
 
-            # Success rate
             success_rate = (
                 (total_successes / total_samples) * 100 if total_samples > 0 else 0
             )
 
-            # Add batch-level scalar metrics
-            (
-                metrics_writer.add_scalar_metric("Average Flight Duration")
-                .with_description("Average duration across all flights")
-                .with_importance(MetricImportance.HIGH_IMPORTANCE)
-                .with_value(avg_duration)
-                .with_unit("seconds")
-                .with_status(MetricStatus.PASSED_METRIC_STATUS)
-            )
+            metrics_writer = ResimMetricsWriter(uuid.uuid4())
 
+            # Add batch-level scalar metrics
             (
                 metrics_writer.add_scalar_metric("Highest Recorded Speed")
                 .with_description("Maximum speed achieved across all flights")
                 .with_importance(MetricImportance.HIGH_IMPORTANCE)
                 .with_value(highest_speed)
+                .with_unit("m/s")
+                .with_status(MetricStatus.PASSED_METRIC_STATUS)
+            )
+
+            (
+                metrics_writer.add_scalar_metric("Average Max Speed")
+                .with_description("Average of maximum speeds across all flights")
+                .with_importance(MetricImportance.HIGH_IMPORTANCE)
+                .with_value(avg_max_speed)
                 .with_unit("m/s")
                 .with_status(MetricStatus.PASSED_METRIC_STATUS)
             )
@@ -656,44 +634,41 @@ def run_batch_metrics():
                 )
             )
 
-            # Create a 3D visualization of all flight paths
-            fig = go.Figure()
-            for path in flight_paths:
-                fig.add_trace(
-                    go.Scatter3d(
-                        x=path["x"],
-                        y=path["y"],
-                        z=path["z"],
-                        mode="lines+markers",
-                        name=path["name"],
-                        marker=dict(size=4),
-                        line=dict(width=2),
+            # Create a 3D visualization of all flight paths (if available)
+            if flight_paths:
+                fig = go.Figure()
+                for path in flight_paths:
+                    fig.add_trace(
+                        go.Scatter3d(
+                            x=path["x"],
+                            y=path["y"],
+                            z=path["z"],
+                            mode="lines+markers",
+                            name=path["name"],
+                            marker=dict(size=4),
+                            line=dict(width=2),
+                        )
                     )
+
+                fig.update_layout(
+                    title="Flight Paths Comparison",
+                    scene=dict(
+                        xaxis_title="X (m)", yaxis_title="Y (m)", zaxis_title="Z (m)"
+                    ),
+                    template="plotly_white",
                 )
 
-            fig.update_layout(
-                title="Flight Paths Comparison",
-                scene=dict(
-                    xaxis_title="X (m)", yaxis_title="Y (m)", zaxis_title="Z (m)"
-                ),
-                template="plotly_white",
-            )
-
-            # Add the 3D visualization as a metric
-            (
-                metrics_writer.add_plotly_metric("Flight Paths Comparison")
-                .with_description("3D visualization comparing all flight paths")
-                .with_importance(MetricImportance.HIGH_IMPORTANCE)
-                .with_status(MetricStatus.PASSED_METRIC_STATUS)
-                .with_plotly_data(str(fig.to_json()))
-            )
+                (
+                    metrics_writer.add_plotly_metric("Flight Paths Comparison")
+                    .with_description("3D visualization comparing all flight paths")
+                    .with_importance(MetricImportance.HIGH_IMPORTANCE)
+                    .with_status(MetricStatus.PASSED_METRIC_STATUS)
+                    .with_plotly_data(str(fig.to_json()))
+                )
 
             # Add a summary text metric
             summary = f"""# Flight Batch Summary
-- Total Flights: {len(flight_durations)}
-- Average Duration: {avg_duration:.2f} seconds
-- Longest Flight: {max_duration:.2f} seconds
-- Shortest Flight: {min_duration:.2f} seconds
+- Total Flights: {len(max_speeds)}
 - Highest Speed: {highest_speed:.2f} m/s
 - Average Max Speed: {avg_max_speed:.2f} m/s
 - Total Errors: {total_errors}
@@ -709,15 +684,15 @@ def run_batch_metrics():
                 .with_text(summary)
             )
 
-        # Write and validate metrics
-        metrics_proto = metrics_writer.write()
-        validate_job_metrics(metrics_proto.metrics_msg)
+            # Write and validate metrics
+            metrics_proto = metrics_writer.write()
+            validate_job_metrics(metrics_proto.metrics_msg)
 
-        # Write to file
-        output_path = Path("/tmp/resim/outputs/metrics.binproto")
-        with output_path.open("wb") as metrics_out:
-            metrics_out.write(metrics_proto.metrics_msg.SerializeToString())
-        print(f"Batch metrics: Wrote metrics to {output_path}")
+            # Write to file
+            output_path = Path("/tmp/resim/outputs/metrics.binproto")
+            with output_path.open("wb") as metrics_out:
+                metrics_out.write(metrics_proto.metrics_msg.SerializeToString())
+            print(f"Batch metrics: Wrote metrics to {output_path}")
 
     except Exception as e:
         raise RuntimeError("Error processing batch metrics") from e
