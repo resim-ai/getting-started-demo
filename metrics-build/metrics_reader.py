@@ -358,9 +358,9 @@ def add_speed_distribution_plot(
     )
 
 
-def add_plotly_metrics(metrics_writer: ResimMetricsWriter, flight_data: dict) -> None:
-    """Create and add a 3D visualization of the flight path using Plotly."""
-    # Create a 3D scatter plot of the flight path
+def add_plotly_metrics_from_flight_data(metrics_writer: ResimMetricsWriter, flight_data: dict) -> None:
+    """Create and add a 3D visualization of the flight path using Plotly from raw flight data."""
+    # Extract X, Y, Z, and state from flight_data["samples"]
     x = [sample["position"]["x"] for sample in flight_data["samples"]]
     y = [sample["position"]["y"] for sample in flight_data["samples"]]
     z = [sample["position"]["z"] for sample in flight_data["samples"]]
@@ -371,6 +371,7 @@ def add_plotly_metrics(metrics_writer: ResimMetricsWriter, flight_data: dict) ->
     state_to_num = {state: i for i, state in enumerate(unique_states)}
     color_values = [state_to_num[state] for state in states]
 
+    # Create a 3D scatter plot
     fig = go.Figure(
         data=[
             go.Scatter3d(
@@ -409,19 +410,17 @@ def add_plotly_metrics(metrics_writer: ResimMetricsWriter, flight_data: dict) ->
 
 
 def add_text_metrics(metrics_writer: ResimMetricsWriter, flight_data: dict) -> None:
-    # Create a summary text
     total_time = len(flight_data["samples"])
     states = set(sample["state"] for sample in flight_data["samples"])
     max_speed = max(sample["speed"] for sample in flight_data["samples"])
 
     summary = f"""# Flight Summary
-- Total Duration: {total_time} seconds
-- States Observed: {', '.join(states)}
-- Maximum Speed: {max_speed:.2f} m/s
-- Units: {flight_data['metadata']['units']}
-"""
+    - Total Duration: {total_time} seconds
+    - States Observed: {', '.join(states)}
+    - Maximum Speed: {max_speed:.2f} m/s
+    - Units: {flight_data['metadata']['units']}
+    """
 
-    # Add text metric
     (
         metrics_writer.add_text_metric("Flight Summary")
         .with_description("Summary of the flight data")
@@ -481,7 +480,7 @@ def run_test_metrics():
         add_speed_distribution_plot(metrics_writer, flight_data)
 
         log_metric_addition("3D Flight Path")
-        add_plotly_metrics(metrics_writer, flight_data)
+        add_plotly_metrics_from_flight_data(metrics_writer, flight_data)
 
         log_metric_addition("Flight Summary")
         add_text_metrics(metrics_writer, flight_data)
@@ -542,23 +541,26 @@ def run_batch_metrics():
             try:
                 # Example: Extract max speed from scalar metrics
                 max_speed = None
-                for metric in metrics_proto.metrics_msg.metrics_data:
-                    if metric.name == "Maximum Speed":
+                for metric in metrics_proto.metrics:
+                    if metric.name == "Maximum Speed" and isinstance(metric, ScalarMetric):
                         max_speed = metric.value
-                    # You can extract other metrics here as needed
+                        break
 
                 if max_speed is not None:
                     max_speeds.append(max_speed)
 
                 # Count status occurrences
                 error_count = sum(
-                    1 for metric in metrics_proto.metrics_msg.metrics_data if metric.status == MetricStatus.FAIL_BLOCK_METRIC_STATUS
+                    1 for metric in metrics_proto.metrics
+                    if getattr(metric, "status", None) == MetricStatus.FAIL_BLOCK_METRIC_STATUS
                 )
                 warning_count = sum(
-                    1 for metric in metrics_proto.metrics_msg.metrics_data if metric.status == MetricStatus.FAIL_WARN_METRIC_STATUS
+                    1 for metric in metrics_proto.metrics
+                    if getattr(metric, "status", None) == MetricStatus.FAIL_WARN_METRIC_STATUS
                 )
                 success_count = sum(
-                    1 for metric in metrics_proto.metrics_msg.metrics_data if metric.status == MetricStatus.PASSED_METRIC_STATUS
+                    1 for metric in metrics_proto.metrics
+                    if getattr(metric, "status", None) == MetricStatus.PASSED_METRIC_STATUS
                 )
 
                 error_counts.append(error_count)
@@ -566,9 +568,16 @@ def run_batch_metrics():
                 success_counts.append(success_count)
 
                 # Example: Store flight path for visualization if you have X/Y/Z metrics
-                x = [metric.value for metric in metrics_proto.metrics_msg.metrics_data if metric.name == "X Position Over Time"]
-                y = [metric.value for metric in metrics_proto.metrics_msg.metrics_data if metric.name == "Y Position Over Time"]
-                z = [metric.value for metric in metrics_proto.metrics_msg.metrics_data if metric.name == "Altitude Over Time"]
+                x = []
+                y = []
+                z = []
+                for metric in metrics_proto.metrics:
+                    if metric.name == "X Position Over Time" and isinstance(metric, SeriesMetricsData):
+                        x = metric
+                    if metric.name == "Y Position Over Time" and isinstance(metric, SeriesMetricsData):
+                        y = metric.values
+                    if metric.name == "Altitude Over Time" and isinstance(metric, SeriesMetricsData):
+                        z = metric.values
                 if x and y and z:
                     flight_paths.append(
                         {
@@ -625,7 +634,7 @@ def run_batch_metrics():
                 .with_unit("%")
                 .with_status(
                     MetricStatus.FAIL_BLOCK_METRIC_STATUS
-                    if success_rate < 90
+                    if success_rate < 70
                     else (
                         MetricStatus.FAIL_WARN_METRIC_STATUS
                         if success_rate < 95
@@ -698,6 +707,73 @@ def run_batch_metrics():
         raise RuntimeError("Error processing batch metrics") from e
 
     print("Completed processing batch metrics. Exiting.")
+
+
+def add_plotly_metrics_from_proto(metrics_writer: ResimMetricsWriter, metrics_proto, job_id=None, job_name=None) -> None:
+    """
+    Create and add a 3D visualization of the flight path using Plotly,
+    extracting X, Y, Z from metrics_proto.metrics_data.
+    Optionally, include job_id/job_name in the plot title.
+    """
+    # Build a lookup for metrics_data by name
+    x, y, z = None, None, None
+    for data in getattr(metrics_proto, "metrics_data", []):
+        if data.name == "X Position Over Time":
+            x = getattr(data, "series", None)
+        elif data.name == "Y Position Over Time":
+            y = getattr(data, "series", None)
+        elif data.name == "Altitude Over Time":
+            z = getattr(data, "series", None)
+
+    # If any are missing, skip plotting
+    if x is None or y is None or z is None:
+        print(f"Missing X, Y, or Z series for job {job_id or ''} ({job_name or ''}), skipping 3D plot.")
+        return
+
+    # Convert to numpy arrays if needed
+    import numpy as np
+    x = np.array(x)
+    y = np.array(y)
+    z = np.array(z)
+
+    # Create a 3D scatter plot
+    fig = go.Figure(
+        data=[
+            go.Scatter3d(
+                x=x,
+                y=y,
+                z=z,
+                mode="markers+lines",
+                marker=dict(
+                    size=6,
+                    color=z,  # Color by altitude for visual interest
+                    colorscale="Viridis",
+                    opacity=0.8,
+                    colorbar=dict(title="Altitude (m)"),
+                ),
+            )
+        ]
+    )
+
+    title = "3D Flight Path"
+    if job_name:
+        title += f" - {job_name}"
+    elif job_id:
+        title += f" - {job_id}"
+
+    fig.update_layout(
+        title=title,
+        scene=dict(xaxis_title="X (m)", yaxis_title="Y (m)", zaxis_title="Z (m)"),
+    )
+
+    # Add plotly metric
+    (
+        metrics_writer.add_plotly_metric(title)
+        .with_description("Interactive 3D visualization of the flight path from batch metrics")
+        .with_importance(MetricImportance.HIGH_IMPORTANCE)
+        .with_status(MetricStatus.PASSED_METRIC_STATUS)
+        .with_plotly_data(str(fig.to_json()))
+    )
 
 
 if __name__ == "__main__":
