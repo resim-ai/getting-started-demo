@@ -39,7 +39,8 @@ docker push public.ecr.aws/resim/open-builds/getting-started-demo:metrics-build-
 resim builds create \
 --image "public.ecr.aws/resim/open-builds/getting-started-demo:experience-build-${VERSION}" \
 --version "experience-build-${VERSION}" \
---description "Experience Build ${VERSION}" \
+--name "Experience Build ${VERSION}"\
+--description "Demonstration build to show experiences builds" \
 --branch "getting-started-demo-branch" \
 --project "ReSim Getting Started Demo" \
 --system "Getting Started Demo System" \

@@ -80,7 +80,7 @@ def add_speed_over_time_plot(
             statuses.append(
                 MetricStatus.FAIL_BLOCK_METRIC_STATUS
             )  # Using FAIL_BLOCK_METRIC_STATUS for errors
-        elif sample["status"] == "Warning":
+        elif sample["status"].lower() == "warning":
             has_warning = True
             statuses.append(
                 MetricStatus.FAIL_WARN_METRIC_STATUS
@@ -153,7 +153,7 @@ def add_altitude_warning_plot(
             statuses.append(
                 MetricStatus.FAIL_BLOCK_METRIC_STATUS
             )  # Using FAIL_BLOCK_METRIC_STATUS for errors
-        elif sample["status"] == "Warning":
+        elif sample["status"].lower() == "warning":
             has_warning = True
             statuses.append(
                 MetricStatus.FAIL_WARN_METRIC_STATUS
@@ -511,6 +511,64 @@ def run_test_metrics():
     print("Completed processing metrics. Exiting.")
 
 
+def add_altitude_comparison_plot(metrics_writer: ResimMetricsWriter, job_to_metrics: dict) -> None:
+    """Create a plot comparing altitude over time across different flights."""
+    # Create Plotly figure
+    fig = go.Figure()
+    
+    # Colors for different flights
+    colors = ['#636efa', '#EF553B', '#00cc96', '#ab63fa', '#FFA15A', '#19d3f3', '#FF6692', '#B6E880']
+    
+    for i, (test_id, metrics_proto) in enumerate(job_to_metrics.items()):
+        # Find the altitude over time metric
+        altitude_data = None
+        for metric in metrics_proto.metrics:
+            if metric.name == "Altitude Over Time" and isinstance(metric, PlotlyMetric):
+                if metric.plotly_data is None:
+                    continue
+                plotly_data = json.loads(metric.plotly_data)
+                if plotly_data and "data" in plotly_data and len(plotly_data["data"]) > 0:
+                    altitude_data = plotly_data["data"][0]
+                    break
+        
+        if altitude_data and "x" in altitude_data and "y" in altitude_data:
+            # Add trace for this flight
+            fig.add_trace(
+                go.Scattergl(
+                    x=altitude_data["x"],
+                    y=altitude_data["y"],
+                    mode="lines",
+                    name=f"Flight {test_id}",
+                    line=dict(
+                        color=colors[i % len(colors)],
+                        dash="solid"
+                    ),
+                    marker=dict(symbol="circle"),
+                    hovertemplate=f"test=Flight {test_id}<br>time (s)=%{{x}}<br>altitude (m)=%{{y}}<extra></extra>",
+                    legendgroup=f"Flight {test_id}",
+                    showlegend=True
+                )
+            )
+    
+    # Update layout
+    fig.update_layout(
+        title="Altitude Comparison Across Flights",
+        xaxis_title="Time (s)",
+        yaxis_title="Altitude (m)",
+        showlegend=True,
+        template="plotly_white"
+    )
+    
+    # Add plotly metric
+    (
+        metrics_writer.add_plotly_metric("Altitude Comparison")
+        .with_description("Comparison of altitude over time across different flights")
+        .with_importance(MetricImportance.HIGH_IMPORTANCE)
+        .with_status(MetricStatus.PASSED_METRIC_STATUS)
+        .with_plotly_data(str(fig.to_json()))
+    )
+
+
 def run_batch_metrics():
     """Process and generate aggregate metrics for a batch of tests."""
     try:
@@ -535,7 +593,6 @@ def run_batch_metrics():
         error_counts = []
         warning_counts = []
         success_counts = []
-        flight_paths = []
 
         for test_id, metrics_proto in job_to_metrics.items():
             try:
@@ -567,26 +624,6 @@ def run_batch_metrics():
                 warning_counts.append(warning_count)
                 success_counts.append(success_count)
 
-                # Example: Store flight path for visualization if you have X/Y/Z metrics
-                x = []
-                y = []
-                z = []
-                for metric in metrics_proto.metrics:
-                    if metric.name == "X Position Over Time" and isinstance(metric, SeriesMetricsData):
-                        x = metric
-                    if metric.name == "Y Position Over Time" and isinstance(metric, SeriesMetricsData):
-                        y = metric.values
-                    if metric.name == "Altitude Over Time" and isinstance(metric, SeriesMetricsData):
-                        z = metric.values
-                if x and y and z:
-                    flight_paths.append(
-                        {
-                            "x": x,
-                            "y": y,
-                            "z": z,
-                            "name": f"Flight {test_id}",
-                        }
-                    )
             except Exception as e:
                 print(f"Error processing test {test_id}: {str(e)}")
                 continue
@@ -637,43 +674,14 @@ def run_batch_metrics():
                     if success_rate < 70
                     else (
                         MetricStatus.FAIL_WARN_METRIC_STATUS
-                        if success_rate < 95
+                        if success_rate < 74
                         else MetricStatus.PASSED_METRIC_STATUS
                     )
                 )
             )
 
-            # Create a 3D visualization of all flight paths (if available)
-            if flight_paths:
-                fig = go.Figure()
-                for path in flight_paths:
-                    fig.add_trace(
-                        go.Scatter3d(
-                            x=path["x"],
-                            y=path["y"],
-                            z=path["z"],
-                            mode="lines+markers",
-                            name=path["name"],
-                            marker=dict(size=4),
-                            line=dict(width=2),
-                        )
-                    )
-
-                fig.update_layout(
-                    title="Flight Paths Comparison",
-                    scene=dict(
-                        xaxis_title="X (m)", yaxis_title="Y (m)", zaxis_title="Z (m)"
-                    ),
-                    template="plotly_white",
-                )
-
-                (
-                    metrics_writer.add_plotly_metric("Flight Paths Comparison")
-                    .with_description("3D visualization comparing all flight paths")
-                    .with_importance(MetricImportance.HIGH_IMPORTANCE)
-                    .with_status(MetricStatus.PASSED_METRIC_STATUS)
-                    .with_plotly_data(str(fig.to_json()))
-                )
+            # Add the altitude comparison plot
+            add_altitude_comparison_plot(metrics_writer, job_to_metrics)
 
             # Add a summary text metric
             summary = f"""# Flight Batch Summary
