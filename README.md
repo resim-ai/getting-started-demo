@@ -10,18 +10,10 @@ Once you have gone through the simply Getting Started Guide, you will then be re
 
 ### Contents of this repository
 
+- `devcontainer/` - This folder contains the devcontainer configuration for the ReSim CLI for local development.
 - `experience-build/` - This folder contains the experience build that you will use to create your experiences.
+  - `/experiences/` - `Note:` The experience folders in this subdirectory are for local testing purposes only. Your experience build will pull the experiences from S3 and you will reference them using the `--location` flag when creating experiences as outlined in the [ReSim Experience Documentation](https://docs.resim.ai/setup/adding-experiences/).
 - `metrics-build/` - This folder contains the metrics build that you will use to create your metrics.
-- `build.sh` - This script will build the experience and metrics builds and push them to S3 and ReSim.
-- `README.md` - This file.
-
-
-This Getting Started guide will highlight the following areas:
-
-1. Providing an experience build that allows you to create a simple scene
-  - `Note:` The experience folders in this repository are for local testing purposes only. Your experience build will pull the experiences from S3 and you will reference them using the `--location` flag when creating experiences as outlined in the [ReSim Experience Documentation](https://docs.resim.ai/setup/adding-experiences/).
-2. Creating a metrics build that takes the outputs of the experience build and creates some simple metrics
-3. Demonstrates sample metrics graph to see how the metrics are displayed
 
 ### Contributions
 
