@@ -2,9 +2,19 @@
 
 ### Purpose of this repository
 
-We want to provide you with some very simple examples of how to use ReSim. This repository is provided as a simple, stripped down example so you can walk through getting ReSim up and running before integrating ReSim with your own system. This resources are to be used with the [ReSim Getting Started Guide](https://docs.resim.ai/setup/).
+We want to provide you with some very simple examples of how to use ReSim. 
 
-### Areas to be highlighted
+Customers want a very fast example of ReSim in use. This repository provides you with out-of-the-box examples for you to follow along in our [Getting Started Guide](https://docs.resim.ai/setup/). This sample repository shows you how to create builds, experiences, and metrics. It provides readily available, public S3 URLs for you to plug and play in your own ReSim environment.  
+
+Once you have gone through the simply Getting Started Guide, you will then be ready to use your own systems and resources to launch ReSim for your organization. 
+
+### Contents of this repository
+
+- `experience-build/` - This folder contains the experience build that you will use to create your experiences.
+- `metrics-build/` - This folder contains the metrics build that you will use to create your metrics.
+- `build.sh` - This script will build the experience and metrics builds and push them to S3 and ReSim.
+- `README.md` - This file.
+
 
 This Getting Started guide will highlight the following areas:
 
