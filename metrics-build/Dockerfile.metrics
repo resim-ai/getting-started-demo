@@ -4,9 +4,9 @@ LABEL maintainer="matthew@resim.ai"
 
 # Copy files
 COPY requirements.txt .
-COPY metrics_reader.py .
+COPY *.py .
 
 # Install dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
-CMD ["python", "metrics_reader.py"] 
+CMD ["python", "main.py"] 
