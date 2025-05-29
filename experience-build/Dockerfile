@@ -7,8 +7,7 @@ RUN mkdir -p /tmp/resim/inputs/
 
 WORKDIR /app
 
-# Copy hello.py
-COPY hello.py .
+COPY sim_run.py .
 
 # Default command
-CMD ["python", "hello.py"]
+CMD ["python", "sim_run.py"]

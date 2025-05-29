@@ -1,2 +1,5 @@
 metrics.binproto
 .tool-versions
+.mypy_cache/
+.vscode/
+build.sh
