@@ -4,7 +4,9 @@
 
 We want to provide you with some very simple examples of how to use ReSim. 
 
-Customers want a fast example of ReSim in use. This repository provides you with out-of-the-box examples for you to follow along in our [Getting Started Guide](https://docs.resim.ai/setup/). The idea is that you can use the pre-baked experiences, builds (experience and metric builds), and metrics to follow along with the guide and stand something of substance up quickly. It provides readily available, public S3 and ECR URLs for you to plug and play in your own ReSim environment.  
+Customers want a fast example of ReSim in use. This repository provides you with out-of-the-box examples for you to follow along in our [Getting Started Guide](https://docs.resim.ai/setup/). You can use the pre-baked experiences, builds (experience and metric builds), and metrics to follow along with the guide and stand something of substance up quickly. It provides readily available, public S3 and ECR URLs for you to plug and play in your own ReSim environment. 
+
+We want to avoid duplicating documentation of how to use ReSim into this repository. We recommend at least going through the [Core Concepts](https://docs.resim.ai/core-concepts/) section of ReSim's documentation before you begin the Getting Started Guide.  
 
 Once you have gone through the simple Getting Started Guide, you will then be ready to use your own systems and resources to launch ReSim for your organization. 
 
@@ -16,7 +18,6 @@ Once you have gone through the simple Getting Started Guide, you will then be re
 - `metrics-build/` - This folder contains the metrics build that you will use to create your metrics.
 
 ### Resources
-
 
 - [Overview of ReSim Core Concepts](https://docs.resim.ai/core-concepts/)
 - [ReSim Getting Started Guide](https://docs.resim.ai/setup/)
