@@ -17,6 +17,8 @@ Once you have gone through the simple Getting Started Guide, you will then be re
 
 ### Resources
 
+
+- [Overview of ReSim Core Concepts](https://docs.resim.ai/core-concepts/)
 - [ReSim Getting Started Guide](https://docs.resim.ai/setup/)
 - [ReSim CLI](https://github.com/resim-ai/api-client)
 

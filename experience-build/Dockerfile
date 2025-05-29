@@ -7,8 +7,6 @@ RUN mkdir -p /tmp/resim/inputs/
 
 WORKDIR /app
 
-# Copy experiences folder and simulation script
-COPY experiences/ /experiences/
 COPY sim_run.py .
 
 # Default command
