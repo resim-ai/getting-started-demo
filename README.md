@@ -14,17 +14,17 @@ Once you have gone through the simple Getting Started Guide, you will then be re
 
 - `devcontainer/` - This folder contains the devcontainer configuration for testing things in this guide locally.
 - `experience-build/` - This folder contains the experience build that you will use to create your experiences. This `sim_run.py` script is copying over the file from your experience into the output location. Presumably your experience build will create output files based on your systems running against your experiences.
-  - `/experiences/` - `Note:` The experience folders in this subdirectory are for local testing purposes only. Your experience build will pull the experiences from S3 and you will reference them using the `--location` flag when creating experiences as outlined in the [ReSim Experience Documentation](https://docs.resim.ai/setup/adding-experiences/).
+  - `/experiences/` - These experiences are locally stored instead of S3. For your own experiences you may choose to store them in S3. 
 - `metrics-build/` - This folder contains the metrics build that you will use to create your metrics.
 
 ### URLs for the pre-baked experiences, builds, and metrics
 
-These will be added to the [Getting Started Guide](https://docs.resim.ai/setup/) in the documentation in the future, but for now, they can be found here:
+These are the `--location` attributes for experiences and builds. 
 
 - Experiences: 
-  - **Maiden Flight Voyage** - `s3://resim-getting-started-demo/experiences/maiden_drone_flight/`
-  - **Drone Flight Fast** - `s3://resim-getting-started-demo/experiences/fast_drone_flight/`
-  - **Drone Flight with Warning** - `s3://resim-getting-started-demo/experiences/warning_drone_flight/`
+  - **Maiden Flight Voyage** - `/app/experiences/maiden_drone_flight/`
+  - **Drone Flight Fast** - `/app/experiences/fast_drone_flight/`
+  - **Drone Flight with Warning** - `/app/experiences/warning_drone_flight/`
 - **Experience Build** - `public.ecr.aws/resim/open-builds/getting-started-demo:experience-build-v21`
 - **Metric Build** - `public.ecr.aws/resim/open-builds/getting-started-demo:metrics-build-v24`
 
