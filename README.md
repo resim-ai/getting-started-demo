@@ -22,9 +22,9 @@ Once you have gone through the simple Getting Started Guide, you will then be re
 These are the `--location` attributes for experiences and builds. 
 
 - Experiences: 
-  - **Maiden Flight Voyage** - `/app/experiences/maiden_drone_flight/`
-  - **Drone Flight Fast** - `/app/experiences/fast_drone_flight/`
-  - **Drone Flight with Warning** - `/app/experiences/warning_drone_flight/`
+  - **Maiden Flight Voyage** - `experiences/maiden_drone_flight/`
+  - **Drone Flight Fast** - `experiences/fast_drone_flight/`
+  - **Drone Flight with Warning** - `experiences/warning_drone_flight/`
 - **Experience Build** - `public.ecr.aws/resim/open-builds/getting-started-demo:experience-build-v21`
 - **Metric Build** - `public.ecr.aws/resim/open-builds/getting-started-demo:metrics-build-v24`
 
