@@ -1,6 +1,7 @@
 import json
 import logging
 import os
+import shutil
 from datetime import datetime
 
 # Ensure the outputs directory exists
@@ -18,17 +19,32 @@ logging.basicConfig(
 def main():
     print("Starting simulation run...")
 
-    # Read the flight data from the input JSON file
-    input_file = "/tmp/resim/inputs/flight_log.json"
+    # Read the test_config.json file to get the experience location
+    config_path = "/tmp/resim/test_config.json"
     try:
-        with open(input_file, "r") as f:
-            flight_data = json.load(f)
-        print(f"Successfully loaded flight data from {input_file}")
+        with open(config_path, "r") as f:
+            test_config = json.load(f)
     except FileNotFoundError:
-        print(f"Error: Could not find input file at {input_file}")
+        print(f"Error: Could not find config file at {config_path}")
         return
     except json.JSONDecodeError as e:
-        print(f"Error: Invalid JSON in input file: {e}")
+        print(f"Error: Invalid JSON in config file: {e}")
+        return
+
+    experience_location = test_config["experienceLocation"]
+    print(f"Experience location: {experience_location}")
+
+    # Read the flight_log.json directly from the experience location
+    src_flight_log = os.path.join(experience_location, "flight_log.json")
+    try:
+        with open(src_flight_log, "r") as f:
+            flight_data = json.load(f)
+        print(f"Successfully loaded flight data from {src_flight_log}")
+    except FileNotFoundError:
+        print(f"Error: Could not find flight log at {src_flight_log}")
+        return
+    except json.JSONDecodeError as e:
+        print(f"Error: Invalid JSON in flight log: {e}")
         return
 
     # Write the flight data to the output log
