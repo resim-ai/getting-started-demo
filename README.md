@@ -25,8 +25,8 @@ These are the `--location` attributes for experiences and builds.
   - **Maiden Flight Voyage** - `experiences/maiden_drone_flight/`
   - **Drone Flight Fast** - `experiences/fast_drone_flight/`
   - **Drone Flight with Warning** - `experiences/warning_drone_flight/`
-- **Experience Build** - `public.ecr.aws/resim/open-builds/getting-started-demo:experience-build-v21`
-- **Metric Build** - `public.ecr.aws/resim/open-builds/getting-started-demo:metrics-build-v24`
+- **Experience Build** - `public.ecr.aws/resim/open-builds/getting-started-demo:experience-build-v25`
+- **Metric Build** - `public.ecr.aws/resim/open-builds/getting-started-demo:metrics-build-v25`
 
 
 ### Resources
