@@ -1,45 +1,52 @@
 version: 1
 
-topics: 
+topics:
   drone_speed:
     schema:
-      speeds: float
-  nodes_crashes:
-    event: true
-    schema: 
-      name: string
-      description: string
-      status: status
-      tags: string[]
+      speed: float
+  
+  drone_position:
+    schema:
+      x: float
+      y: float
+      z: float
+  
+  drone_state:
+    schema:
+      state: string
+  
+  drone_status:
+    schema:
+      status: string
 
-metrics: 
-  Speed over time: 
+metrics:
+  Speed over time:
     type: test
     description: Speed over time
-    query_string: SELECT 'speed' as group_name, timestamp, speeds FROM drone_speed
+    query_string: SELECT 'speed' as group_name, timestamp, speed FROM drone_speed
     template_type: custom
     template_file: custom_line.liquid
-  avg speed: 
+  avg speed:
     type: batch
-    query_string: SELECT avg(speeds) as avg_speed FROM drone_speed
+    query_string: SELECT avg(speed) as avg_speed FROM drone_speed
     template_type: system
     template: scalar
-  average drone speed over time: 
+  average drone speed over time:
     type: report
     description: show how the average drone speed has changed over time.
     query_string: |
-      SELECT 'speed' as speed, date_trunc('day', time) AS day, avg(speeds) AS avg_speed
+      SELECT 'speed' as speed, date_trunc('day', time) AS day, avg(speed) AS avg_speed
       FROM drone_speed
       GROUP BY date_trunc('day', time)
-      ORDER BY day ASC
+      ORDER BY day ASC;
     template_type: system
     template: line
 
-  metrics sets:
-    drone metrics:
-      metrics:
-        - Speed over time
-        - avg speed
-    simple path planner nightly reports:
-      metrics:
-        - average drone speed over time
+metrics sets:
+  drone metrics:
+    metrics:
+      - Speed over time
+      - avg speed
+  simple path planner nightly reports:
+    metrics:
+      - average drone speed over time
