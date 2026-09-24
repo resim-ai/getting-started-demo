@@ -1,0 +1,54 @@
+{
+  "data": [
+    {
+      "x": [
+        {% for item in east_m -%}
+          "{{ item }}"{% unless forloop.last %},{% endunless %}
+        {%- endfor %}
+      ],
+      "y": [
+        {% for item in north_m -%}
+          "{{ item }}"{% unless forloop.last %},{% endunless %}
+        {%- endfor %}
+      ],
+      "text": [
+        {% for item in state -%}
+          "{{ item }} ({{ health[forloop.index0] }})"{% unless forloop.last %},{% endunless %}
+        {%- endfor %}
+      ],
+      "type": "scatter",
+      "mode": "lines+markers",
+      "name": "Flight path",
+      "line": { "color": "rgba(128, 128, 128, 0.5)", "width": 2 },
+      "marker": {
+        "size": 6,
+        "color": [
+          {% for item in health -%}
+            "{% case item %}{% when 'WARNING' %}#f28e2b{% when 'ERROR' %}#e15759{% else %}#4e79a7{% endcase %}"{% unless forloop.last %},{% endunless %}
+          {%- endfor %}
+        ]
+      },
+      "hovertemplate": "East %{x} m, north %{y} m<br>%{text}<extra></extra>"
+    },
+    {
+      "x": ["0"],
+      "y": ["0"],
+      "type": "scatter",
+      "mode": "markers",
+      "name": "Launch pad",
+      "marker": { "symbol": "star", "size": 14, "color": "#59a14f" },
+      "hovertemplate": "Launch pad<extra></extra>"
+    }
+  ],
+  "layout": {
+    "xaxis": { "title": { "text": "East (m)" }, "zeroline": false },
+    "yaxis": { "title": { "text": "North (m)" }, "zeroline": false, "scaleanchor": "x", "scaleratio": 1 },
+    "plot_bgcolor": "rgba(0, 0, 0, 0)",
+    "paper_bgcolor": "rgba(0, 0, 0, 0)",
+    "showlegend": true,
+    "hovermode": "closest"
+  },
+  "config": {
+    "responsive": true
+  }
+}

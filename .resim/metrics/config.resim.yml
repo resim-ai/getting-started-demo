@@ -1,0 +1,219 @@
+# Metrics for the getting-started drone demo.
+#
+# experience-build/sim_run.py emits one flight_sample row per second of flight,
+# plus a flight_event whenever the flight state or health flag changes. Each
+# metric below is a SQL query over those rows plus the template that draws it.
+# Timestamps are nanoseconds since takeoff, so `timestamp / 1E9` is seconds.
+version: 1
+
+topics:
+  flight_sample:
+    schema:
+      speed: float
+      state: string
+      # The flight log's own health flag: OK, WARNING or Error.
+      flight_status: string
+      # Meters east, north and up from the launch pad.
+      x: float
+      y: float
+      z: float
+
+  # Events show up on each test's Events tab, pinned to a moment in the flight.
+  # A health warning or error event carries its own FAIL_WARN or FAIL_BLOCK
+  # status, which counts toward the test's result.
+  flight_event:
+    event: true
+    schema:
+      name: string
+      description: string
+      status: status
+      tags: string[]
+      metrics: metric[]
+
+metrics:
+  # ---------------------------------------------------------------- test level
+  Off-Nominal Samples:
+    type: test
+    description: >
+      Seconds of flight the drone reported as anything other than OK. Warns on
+      any WARNING sample and blocks on any Error sample.
+    query_string: |
+      SELECT CAST(COUNT_IF(UPPER(flight_status) <> 'OK') AS DOUBLE)
+      FROM flight_sample;
+    status:
+      query_string: |
+        SELECT 1
+        FROM flight_sample
+        WHERE CASE UPPER(flight_status)
+                WHEN 'ERROR' THEN 2
+                WHEN 'WARNING' THEN 1
+                ELSE 0
+              END >= ?
+        HAVING COUNT(*) > 0;
+      warn: 1
+      block: 2
+    template_type: system
+    template: scalar
+    units: samples
+
+  Maximum Speed:
+    type: test
+    description: Highest speed reached during the flight.
+    query_string: |
+      SELECT MAX(speed) FROM flight_sample;
+    template_type: system
+    template: scalar
+    units: m/s
+
+  Speed Over Time:
+    type: test
+    description: Ground speed over the course of the flight.
+    query_string: |
+      SELECT
+        'Speed' AS group_name,
+        timestamp / 1E9 AS "Time (s)",
+        speed AS "Speed (m/s)"
+      FROM flight_sample
+      ORDER BY timestamp;
+    template_type: system
+    template: line
+
+  Altitude Over Time:
+    type: test
+    description: Height above the takeoff point over the course of the flight.
+    query_string: |
+      SELECT
+        'Altitude' AS group_name,
+        timestamp / 1E9 AS "Time (s)",
+        z AS "Altitude (m)"
+      FROM flight_sample
+      ORDER BY timestamp;
+    template_type: system
+    template: line
+
+  Flight Path:
+    type: test
+    description: >
+      Top-down view of the route flown, colored by the drone's health flag.
+      Drawn by a custom template, since the path doubles back on itself.
+    query_string: |
+      SELECT
+        x AS east_m,
+        y AS north_m,
+        UPPER(flight_status) AS health,
+        state
+      FROM flight_sample
+      ORDER BY timestamp;
+    template_type: custom
+    template_file: flight_path.liquid
+
+  Flight States Over Time:
+    type: test
+    description: What the drone was doing, from takeoff to landing.
+    query_string: |
+      SELECT
+        'Drone' AS system,
+        timestamp,
+        state
+      FROM flight_sample
+      ORDER BY timestamp;
+    template_type: system
+    template: state_timeline
+
+  Speed Distribution:
+    type: test
+    description: How much of the flight was spent at each speed.
+    query_string: |
+      SELECT speed AS "Speed (m/s)" FROM flight_sample;
+    template_type: system
+    template: histogram
+
+  Flight Summary:
+    type: test
+    description: Key facts about the flight at a glance.
+    query_string: |
+      SELECT "Metric", "Value" FROM (
+        SELECT 1 AS sort_order, 'Duration (s)' AS "Metric",
+          CAST(CAST(ROUND((MAX(timestamp) - MIN(timestamp)) / 1E9) AS BIGINT) AS VARCHAR) AS "Value"
+        FROM flight_sample
+        UNION ALL
+        SELECT 2, 'States Observed',
+          ARRAY_JOIN(ARRAY_SORT(ARRAY_AGG(DISTINCT state)), ', ')
+        FROM flight_sample
+        UNION ALL
+        SELECT 3, 'Maximum Speed (m/s)', CAST(ROUND(MAX(speed), 2) AS VARCHAR)
+        FROM flight_sample
+        UNION ALL
+        SELECT 4, 'Maximum Altitude (m)', CAST(ROUND(MAX(z), 2) AS VARCHAR)
+        FROM flight_sample
+      ) AS summary
+      ORDER BY sort_order;
+    template_type: system
+    template: table
+
+  # --------------------------------------------------------------- batch level
+  Highest Recorded Speed:
+    type: batch
+    description: Fastest speed reached by any flight in the batch.
+    query_string: |
+      SELECT MAX(speed) FROM flight_sample;
+    template_type: system
+    template: scalar
+    units: m/s
+
+  Average Maximum Speed:
+    type: batch
+    description: Each flight's top speed, averaged across the batch.
+    query_string: |
+      SELECT AVG(max_speed)
+      FROM (
+        SELECT job_id, MAX(speed) AS max_speed
+        FROM flight_sample
+        GROUP BY job_id
+      ) AS per_flight;
+    template_type: system
+    template: scalar
+    units: m/s
+
+  Maximum Speed by Flight:
+    type: batch
+    description: Each flight's top speed, side by side.
+    query_string: |
+      SELECT
+        'Maximum Speed' AS group_name,
+        experience_name AS "Flight",
+        MAX(speed) AS "Maximum Speed (m/s)"
+      FROM flight_sample
+      GROUP BY experience_name
+      ORDER BY experience_name;
+    template_type: system
+    template: bar
+
+  Altitude Comparison:
+    type: batch
+    description: Every flight's altitude profile, overlaid from takeoff.
+    query_string: |
+      SELECT
+        experience_name AS group_name,
+        timestamp / 1E9 AS "Time (s)",
+        z AS "Altitude (m)"
+      FROM flight_sample
+      ORDER BY experience_name, timestamp;
+    template_type: system
+    template: line
+
+metrics sets:
+  Drone Flight Metrics:
+    metrics:
+      - Off-Nominal Samples
+      - Maximum Speed
+      - Speed Over Time
+      - Altitude Over Time
+      - Flight Path
+      - Flight States Over Time
+      - Speed Distribution
+      - Flight Summary
+      - Highest Recorded Speed
+      - Average Maximum Speed
+      - Maximum Speed by Flight
+      - Altitude Comparison

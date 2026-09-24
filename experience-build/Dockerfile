@@ -7,6 +7,9 @@ RUN mkdir -p /tmp/resim/inputs/
 
 WORKDIR /app
 
+# SignalFlag SDK, for emitting metrics data
+RUN pip install --no-cache-dir signalflag==1.7.0
+
 # Copy experiences folder and simulation script
 COPY experiences/ /app/experiences/
 
