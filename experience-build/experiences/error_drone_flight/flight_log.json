@@ -1,228 +1,1834 @@
 {
-    "metadata": {
-        "units": {
-            "speed": "m/s",
-            "position": {"x": "m", "y": "m", "z": "m"},
-            "time": "s"
-        }
+  "metadata": {
+    "units": {
+      "speed": "m/s",
+      "position": {
+        "x": "m",
+        "y": "m",
+        "z": "m"
+      },
+      "time": "s"
     },
-    "samples": [
-        {
-            "timestamp": "2024-03-18T10:00:00",
-            "speed": 0.0,
-            "state": "Idle",
-            "status": "OK",
-            "position": {"x": 0.0, "y": 0.0, "z": 0.0}
-        },
-        {
-            "timestamp": "2024-03-18T10:00:01",
-            "speed": 0.0,
-            "state": "Idle",
-            "status": "OK",
-            "position": {"x": 0.0, "y": 0.0, "z": 0.0}
-        },
-        {
-            "timestamp": "2024-03-18T10:00:02",
-            "speed": 0.0,
-            "state": "Idle",
-            "status": "OK",
-            "position": {"x": 0.0, "y": 0.0, "z": 0.0}
-        },
-        {
-            "timestamp": "2024-03-18T10:00:03",
-            "speed": 35.76,
-            "state": "Takeoff",
-            "status": "OK",
-            "position": {"x": 0.0, "y": 0.0, "z": 35.76}
-        },
-        {
-            "timestamp": "2024-03-18T10:00:04",
-            "speed": 35.76,
-            "state": "Takeoff",
-            "status": "OK",
-            "position": {"x": 0.0, "y": 0.0, "z": 71.52}
-        },
-        {
-            "timestamp": "2024-03-18T10:00:05",
-            "speed": 35.76,
-            "state": "Takeoff",
-            "status": "OK",
-            "position": {"x": 0.0, "y": 0.0, "z": 107.28}
-        },
-        {
-            "timestamp": "2024-03-18T10:00:06",
-            "speed": 35.76,
-            "state": "Takeoff",
-            "status": "OK",
-            "position": {"x": 0.0, "y": 0.0, "z": 143.04}
-        },
-        {
-            "timestamp": "2024-03-18T10:00:07",
-            "speed": 35.76,
-            "state": "Takeoff",
-            "status": "OK",
-            "position": {"x": 0.0, "y": 0.0, "z": 178.8}
-        },
-        {
-            "timestamp": "2024-03-18T10:00:08",
-            "speed": 0.0,
-            "state": "Hovering",
-            "status": "OK",
-            "position": {"x": 0.0, "y": 0.0, "z": 178.8}
-        },
-        {
-            "timestamp": "2024-03-18T10:00:09",
-            "speed": 0.0,
-            "state": "Hovering",
-            "status": "OK",
-            "position": {"x": 0.0, "y": 0.0, "z": 178.8}
-        },
-        {
-            "timestamp": "2024-03-18T10:00:10",
-            "speed": 0.0,
-            "state": "Hovering",
-            "status": "OK",
-            "position": {"x": 0.0, "y": 0.0, "z": 178.8}
-        },
-        {
-            "timestamp": "2024-03-18T10:00:11",
-            "speed": 89.4,
-            "state": "Moving",
-            "status": "OK",
-            "position": {"x": 89.4, "y": 0.0, "z": 178.8}
-        },
-        {
-            "timestamp": "2024-03-18T10:00:12",
-            "speed": 89.4,
-            "state": "Moving",
-            "status": "OK",
-            "position": {"x": 178.8, "y": 0.0, "z": 178.8}
-        },
-        {
-            "timestamp": "2024-03-18T10:00:13",
-            "speed": 89.4,
-            "state": "Moving",
-            "status": "OK",
-            "position": {"x": 268.2, "y": 0.0, "z": 178.8}
-        },
-        {
-            "timestamp": "2024-03-18T10:00:14",
-            "speed": 89.4,
-            "state": "Moving",
-            "status": "OK",
-            "position": {"x": 357.6, "y": 0.0, "z": 178.8}
-        },
-        {
-            "timestamp": "2024-03-18T10:00:15",
-            "speed": 89.4,
-            "state": "Moving",
-            "status": "OK",
-            "position": {"x": 447.0, "y": 0.0, "z": 178.8}
-        },
-        {
-            "timestamp": "2024-03-18T10:00:16",
-            "speed": 89.4,
-            "state": "Moving",
-            "status": "OK",
-            "position": {"x": 536.4, "y": 0.0, "z": 178.8}
-        },
-        {
-            "timestamp": "2024-03-18T10:00:17",
-            "speed": 89.4,
-            "state": "Moving",
-            "status": "OK",
-            "position": {"x": 625.8, "y": 0.0, "z": 178.8}
-        },
-        {
-            "timestamp": "2024-03-18T10:00:18",
-            "speed": 89.4,
-            "state": "Moving",
-            "status": "Error",
-            "position": {"x": 715.2, "y": 0.0, "z": 178.8}
-        },
-        {
-            "timestamp": "2024-03-18T10:00:19",
-            "speed": 89.4,
-            "state": "Moving",
-            "status": "Error",
-            "position": {"x": 804.6, "y": 0.0, "z": 178.8}
-        },
-        {
-            "timestamp": "2024-03-18T10:00:20",
-            "speed": 89.4,
-            "state": "Moving",
-            "status": "Error",
-            "position": {"x": 894.0, "y": 0.0, "z": 178.8}
-        },
-        {
-            "timestamp": "2024-03-18T10:00:21",
-            "speed": 0.0,
-            "state": "Hovering",
-            "status": "Error",
-            "position": {"x": 894.0, "y": 0.0, "z": 178.8}
-        },
-        {
-            "timestamp": "2024-03-18T10:00:22",
-            "speed": 0.0,
-            "state": "Hovering",
-            "status": "Error",
-            "position": {"x": 894.0, "y": 0.0, "z": 178.8}
-        },
-        {
-            "timestamp": "2024-03-18T10:00:23",
-            "speed": 0.0,
-            "state": "Hovering",
-            "status": "Error",
-            "position": {"x": 894.0, "y": 0.0, "z": 178.8}
-        },
-        {
-            "timestamp": "2024-03-18T10:00:24",
-            "speed": 35.76,
-            "state": "Landing",
-            "status": "Error",
-            "position": {"x": 894.0, "y": 0.0, "z": 143.04}
-        },
-        {
-            "timestamp": "2024-03-18T10:00:25",
-            "speed": 35.76,
-            "state": "Landing",
-            "status": "Error",
-            "position": {"x": 894.0, "y": 0.0, "z": 107.28}
-        },
-        {
-            "timestamp": "2024-03-18T10:00:26",
-            "speed": 35.76,
-            "state": "Landing",
-            "status": "Error",
-            "position": {"x": 894.0, "y": 0.0, "z": 71.52}
-        },
-        {
-            "timestamp": "2024-03-18T10:00:27",
-            "speed": 35.76,
-            "state": "Landing",
-            "status": "Error",
-            "position": {"x": 894.0, "y": 0.0, "z": 35.76}
-        },
-        {
-            "timestamp": "2024-03-18T10:00:28",
-            "speed": 35.76,
-            "state": "Landing",
-            "status": "Error",
-            "position": {"x": 894.0, "y": 0.0, "z": 0.0}
-        },
-        {
-            "timestamp": "2024-03-18T10:00:29",
-            "speed": 0.0,
-            "state": "Idle",
-            "status": "Error",
-            "position": {"x": 894.0, "y": 0.0, "z": 0.0}
-        },
-        {
-            "timestamp": "2024-03-18T10:00:30",
-            "speed": 0.0,
-            "state": "Idle",
-            "status": "Error",
-            "position": {"x": 894.0, "y": 0.0, "z": 0.0}
-        }
-    ]
-} 
+    "limits": {
+      "altitude_ceiling_m": 120.0,
+      "geofence_radius_m": 350.0
+    }
+  },
+  "samples": [
+    {
+      "timestamp": "2024-03-18T13:00:00",
+      "speed": 0.0,
+      "state": "Idle",
+      "status": "OK",
+      "position": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+      }
+    },
+    {
+      "timestamp": "2024-03-18T13:00:01",
+      "speed": 0.0,
+      "state": "Idle",
+      "status": "OK",
+      "position": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+      }
+    },
+    {
+      "timestamp": "2024-03-18T13:00:02",
+      "speed": 0.0,
+      "state": "Idle",
+      "status": "OK",
+      "position": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+      }
+    },
+    {
+      "timestamp": "2024-03-18T13:00:03",
+      "speed": 0.34,
+      "state": "Takeoff",
+      "status": "OK",
+      "position": {
+        "x": 0.02,
+        "y": 0.19,
+        "z": 0.0
+      }
+    },
+    {
+      "timestamp": "2024-03-18T13:00:04",
+      "speed": 2.91,
+      "state": "Takeoff",
+      "status": "OK",
+      "position": {
+        "x": 0.37,
+        "y": 0.16,
+        "z": 2.42
+      }
+    },
+    {
+      "timestamp": "2024-03-18T13:00:05",
+      "speed": 2.98,
+      "state": "Takeoff",
+      "status": "OK",
+      "position": {
+        "x": 0.03,
+        "y": -0.28,
+        "z": 4.71
+      }
+    },
+    {
+      "timestamp": "2024-03-18T13:00:06",
+      "speed": 3.22,
+      "state": "Takeoff",
+      "status": "OK",
+      "position": {
+        "x": 0.09,
+        "y": 0.17,
+        "z": 8.1
+      }
+    },
+    {
+      "timestamp": "2024-03-18T13:00:07",
+      "speed": 2.94,
+      "state": "Takeoff",
+      "status": "OK",
+      "position": {
+        "x": 0.35,
+        "y": -0.64,
+        "z": 11.01
+      }
+    },
+    {
+      "timestamp": "2024-03-18T13:00:08",
+      "speed": 2.8,
+      "state": "Takeoff",
+      "status": "OK",
+      "position": {
+        "x": -0.21,
+        "y": 0.52,
+        "z": 13.88
+      }
+    },
+    {
+      "timestamp": "2024-03-18T13:00:09",
+      "speed": 2.91,
+      "state": "Takeoff",
+      "status": "OK",
+      "position": {
+        "x": 0.12,
+        "y": -0.12,
+        "z": 16.6
+      }
+    },
+    {
+      "timestamp": "2024-03-18T13:00:10",
+      "speed": 3.01,
+      "state": "Takeoff",
+      "status": "OK",
+      "position": {
+        "x": -0.25,
+        "y": -0.01,
+        "z": 19.82
+      }
+    },
+    {
+      "timestamp": "2024-03-18T13:00:11",
+      "speed": 2.98,
+      "state": "Takeoff",
+      "status": "OK",
+      "position": {
+        "x": 0.73,
+        "y": -0.32,
+        "z": 22.71
+      }
+    },
+    {
+      "timestamp": "2024-03-18T13:00:12",
+      "speed": 2.87,
+      "state": "Takeoff",
+      "status": "OK",
+      "position": {
+        "x": 0.44,
+        "y": -0.28,
+        "z": 26.38
+      }
+    },
+    {
+      "timestamp": "2024-03-18T13:00:13",
+      "speed": 2.94,
+      "state": "Takeoff",
+      "status": "OK",
+      "position": {
+        "x": -0.41,
+        "y": -0.02,
+        "z": 28.69
+      }
+    },
+    {
+      "timestamp": "2024-03-18T13:00:14",
+      "speed": 2.97,
+      "state": "Takeoff",
+      "status": "OK",
+      "position": {
+        "x": 0.18,
+        "y": 0.29,
+        "z": 31.98
+      }
+    },
+    {
+      "timestamp": "2024-03-18T13:00:15",
+      "speed": 3.12,
+      "state": "Takeoff",
+      "status": "OK",
+      "position": {
+        "x": 0.54,
+        "y": 0.16,
+        "z": 34.88
+      }
+    },
+    {
+      "timestamp": "2024-03-18T13:00:16",
+      "speed": 3.0,
+      "state": "Takeoff",
+      "status": "OK",
+      "position": {
+        "x": -0.36,
+        "y": 0.07,
+        "z": 38.15
+      }
+    },
+    {
+      "timestamp": "2024-03-18T13:00:17",
+      "speed": 2.94,
+      "state": "Takeoff",
+      "status": "OK",
+      "position": {
+        "x": -0.23,
+        "y": 0.14,
+        "z": 40.79
+      }
+    },
+    {
+      "timestamp": "2024-03-18T13:00:18",
+      "speed": 3.12,
+      "state": "Takeoff",
+      "status": "OK",
+      "position": {
+        "x": -0.41,
+        "y": 0.52,
+        "z": 43.79
+      }
+    },
+    {
+      "timestamp": "2024-03-18T13:00:19",
+      "speed": 3.03,
+      "state": "Takeoff",
+      "status": "OK",
+      "position": {
+        "x": 0.15,
+        "y": -0.1,
+        "z": 47.15
+      }
+    },
+    {
+      "timestamp": "2024-03-18T13:00:20",
+      "speed": 3.09,
+      "state": "Takeoff",
+      "status": "OK",
+      "position": {
+        "x": 0.05,
+        "y": -0.55,
+        "z": 49.97
+      }
+    },
+    {
+      "timestamp": "2024-03-18T13:00:21",
+      "speed": 3.04,
+      "state": "Takeoff",
+      "status": "OK",
+      "position": {
+        "x": 0.19,
+        "y": 0.4,
+        "z": 53.4
+      }
+    },
+    {
+      "timestamp": "2024-03-18T13:00:22",
+      "speed": 2.75,
+      "state": "Takeoff",
+      "status": "OK",
+      "position": {
+        "x": 0.79,
+        "y": -0.61,
+        "z": 55.88
+      }
+    },
+    {
+      "timestamp": "2024-03-18T13:00:23",
+      "speed": 2.81,
+      "state": "Takeoff",
+      "status": "OK",
+      "position": {
+        "x": 0.33,
+        "y": 0.04,
+        "z": 59.44
+      }
+    },
+    {
+      "timestamp": "2024-03-18T13:00:24",
+      "speed": 2.5,
+      "state": "Moving",
+      "status": "OK",
+      "position": {
+        "x": -0.02,
+        "y": 0.77,
+        "z": 60.43
+      }
+    },
+    {
+      "timestamp": "2024-03-18T13:00:25",
+      "speed": 5.16,
+      "state": "Moving",
+      "status": "OK",
+      "position": {
+        "x": 4.22,
+        "y": 1.68,
+        "z": 62.01
+      }
+    },
+    {
+      "timestamp": "2024-03-18T13:00:26",
+      "speed": 8.0,
+      "state": "Moving",
+      "status": "OK",
+      "position": {
+        "x": 9.85,
+        "y": 4.23,
+        "z": 62.91
+      }
+    },
+    {
+      "timestamp": "2024-03-18T13:00:27",
+      "speed": 10.81,
+      "state": "Moving",
+      "status": "OK",
+      "position": {
+        "x": 19.93,
+        "y": 6.63,
+        "z": 63.17
+      }
+    },
+    {
+      "timestamp": "2024-03-18T13:00:28",
+      "speed": 11.99,
+      "state": "Moving",
+      "status": "OK",
+      "position": {
+        "x": 30.89,
+        "y": 10.49,
+        "z": 63.1
+      }
+    },
+    {
+      "timestamp": "2024-03-18T13:00:29",
+      "speed": 12.02,
+      "state": "Moving",
+      "status": "OK",
+      "position": {
+        "x": 42.35,
+        "y": 14.24,
+        "z": 62.6
+      }
+    },
+    {
+      "timestamp": "2024-03-18T13:00:30",
+      "speed": 12.03,
+      "state": "Moving",
+      "status": "OK",
+      "position": {
+        "x": 53.59,
+        "y": 17.69,
+        "z": 62.41
+      }
+    },
+    {
+      "timestamp": "2024-03-18T13:00:31",
+      "speed": 12.09,
+      "state": "Moving",
+      "status": "OK",
+      "position": {
+        "x": 65.08,
+        "y": 23.08,
+        "z": 61.98
+      }
+    },
+    {
+      "timestamp": "2024-03-18T13:00:32",
+      "speed": 11.99,
+      "state": "Moving",
+      "status": "OK",
+      "position": {
+        "x": 76.51,
+        "y": 25.08,
+        "z": 61.7
+      }
+    },
+    {
+      "timestamp": "2024-03-18T13:00:33",
+      "speed": 12.02,
+      "state": "Moving",
+      "status": "OK",
+      "position": {
+        "x": 87.85,
+        "y": 29.69,
+        "z": 61.31
+      }
+    },
+    {
+      "timestamp": "2024-03-18T13:00:34",
+      "speed": 11.9,
+      "state": "Moving",
+      "status": "OK",
+      "position": {
+        "x": 99.21,
+        "y": 33.91,
+        "z": 60.82
+      }
+    },
+    {
+      "timestamp": "2024-03-18T13:00:35",
+      "speed": 11.99,
+      "state": "Moving",
+      "status": "OK",
+      "position": {
+        "x": 110.87,
+        "y": 36.95,
+        "z": 60.31
+      }
+    },
+    {
+      "timestamp": "2024-03-18T13:00:36",
+      "speed": 11.59,
+      "state": "Moving",
+      "status": "OK",
+      "position": {
+        "x": 120.96,
+        "y": 43.1,
+        "z": 60.11
+      }
+    },
+    {
+      "timestamp": "2024-03-18T13:00:37",
+      "speed": 11.91,
+      "state": "Moving",
+      "status": "OK",
+      "position": {
+        "x": 129.94,
+        "y": 49.96,
+        "z": 60.26
+      }
+    },
+    {
+      "timestamp": "2024-03-18T13:00:38",
+      "speed": 11.84,
+      "state": "Moving",
+      "status": "OK",
+      "position": {
+        "x": 137.59,
+        "y": 59.1,
+        "z": 60.09
+      }
+    },
+    {
+      "timestamp": "2024-03-18T13:00:39",
+      "speed": 12.2,
+      "state": "Moving",
+      "status": "OK",
+      "position": {
+        "x": 144.57,
+        "y": 68.71,
+        "z": 60.11
+      }
+    },
+    {
+      "timestamp": "2024-03-18T13:00:40",
+      "speed": 12.13,
+      "state": "Moving",
+      "status": "OK",
+      "position": {
+        "x": 153.11,
+        "y": 77.43,
+        "z": 59.74
+      }
+    },
+    {
+      "timestamp": "2024-03-18T13:00:41",
+      "speed": 11.89,
+      "state": "Moving",
+      "status": "OK",
+      "position": {
+        "x": 160.19,
+        "y": 86.68,
+        "z": 60.12
+      }
+    },
+    {
+      "timestamp": "2024-03-18T13:00:42",
+      "speed": 12.22,
+      "state": "Moving",
+      "status": "OK",
+      "position": {
+        "x": 167.3,
+        "y": 95.98,
+        "z": 59.9
+      }
+    },
+    {
+      "timestamp": "2024-03-18T13:00:43",
+      "speed": 11.95,
+      "state": "Moving",
+      "status": "OK",
+      "position": {
+        "x": 175.43,
+        "y": 105.7,
+        "z": 60.73
+      }
+    },
+    {
+      "timestamp": "2024-03-18T13:00:44",
+      "speed": 11.97,
+      "state": "Moving",
+      "status": "OK",
+      "position": {
+        "x": 182.85,
+        "y": 114.9,
+        "z": 60.11
+      }
+    },
+    {
+      "timestamp": "2024-03-18T13:00:45",
+      "speed": 12.02,
+      "state": "Moving",
+      "status": "OK",
+      "position": {
+        "x": 191.12,
+        "y": 124.14,
+        "z": 60.15
+      }
+    },
+    {
+      "timestamp": "2024-03-18T13:00:46",
+      "speed": 11.77,
+      "state": "Moving",
+      "status": "OK",
+      "position": {
+        "x": 197.83,
+        "y": 133.13,
+        "z": 59.97
+      }
+    },
+    {
+      "timestamp": "2024-03-18T13:00:47",
+      "speed": 11.99,
+      "state": "Moving",
+      "status": "OK",
+      "position": {
+        "x": 205.81,
+        "y": 142.81,
+        "z": 60.04
+      }
+    },
+    {
+      "timestamp": "2024-03-18T13:00:48",
+      "speed": 11.75,
+      "state": "Moving",
+      "status": "OK",
+      "position": {
+        "x": 213.6,
+        "y": 151.88,
+        "z": 60.19
+      }
+    },
+    {
+      "timestamp": "2024-03-18T13:00:49",
+      "speed": 11.37,
+      "state": "Moving",
+      "status": "OK",
+      "position": {
+        "x": 222.5,
+        "y": 159.28,
+        "z": 60.15
+      }
+    },
+    {
+      "timestamp": "2024-03-18T13:00:50",
+      "speed": 11.52,
+      "state": "Moving",
+      "status": "OK",
+      "position": {
+        "x": 232.23,
+        "y": 164.38,
+        "z": 60.4
+      }
+    },
+    {
+      "timestamp": "2024-03-18T13:00:51",
+      "speed": 12.0,
+      "state": "Moving",
+      "status": "OK",
+      "position": {
+        "x": 243.48,
+        "y": 167.65,
+        "z": 60.08
+      }
+    },
+    {
+      "timestamp": "2024-03-18T13:00:52",
+      "speed": 11.9,
+      "state": "Moving",
+      "status": "OK",
+      "position": {
+        "x": 255.29,
+        "y": 169.9,
+        "z": 60.27
+      }
+    },
+    {
+      "timestamp": "2024-03-18T13:00:53",
+      "speed": 11.88,
+      "state": "Moving",
+      "status": "OK",
+      "position": {
+        "x": 267.63,
+        "y": 173.06,
+        "z": 60.04
+      }
+    },
+    {
+      "timestamp": "2024-03-18T13:00:54",
+      "speed": 11.96,
+      "state": "Moving",
+      "status": "OK",
+      "position": {
+        "x": 279.86,
+        "y": 175.42,
+        "z": 60.06
+      }
+    },
+    {
+      "timestamp": "2024-03-18T13:00:55",
+      "speed": 11.92,
+      "state": "Moving",
+      "status": "OK",
+      "position": {
+        "x": 290.44,
+        "y": 177.86,
+        "z": 60.06
+      }
+    },
+    {
+      "timestamp": "2024-03-18T13:00:56",
+      "speed": 11.99,
+      "state": "Moving",
+      "status": "Error",
+      "position": {
+        "x": 302.58,
+        "y": 181.03,
+        "z": 60.13
+      }
+    },
+    {
+      "timestamp": "2024-03-18T13:00:57",
+      "speed": 11.92,
+      "state": "Moving",
+      "status": "Error",
+      "position": {
+        "x": 314.66,
+        "y": 183.54,
+        "z": 60.27
+      }
+    },
+    {
+      "timestamp": "2024-03-18T13:00:58",
+      "speed": 11.96,
+      "state": "Moving",
+      "status": "Error",
+      "position": {
+        "x": 325.24,
+        "y": 186.09,
+        "z": 60.02
+      }
+    },
+    {
+      "timestamp": "2024-03-18T13:00:59",
+      "speed": 12.18,
+      "state": "Moving",
+      "status": "Error",
+      "position": {
+        "x": 337.87,
+        "y": 188.2,
+        "z": 59.82
+      }
+    },
+    {
+      "timestamp": "2024-03-18T13:01:00",
+      "speed": 12.18,
+      "state": "Moving",
+      "status": "Error",
+      "position": {
+        "x": 348.76,
+        "y": 191.31,
+        "z": 60.3
+      }
+    },
+    {
+      "timestamp": "2024-03-18T13:01:01",
+      "speed": 12.0,
+      "state": "Moving",
+      "status": "Error",
+      "position": {
+        "x": 361.2,
+        "y": 193.79,
+        "z": 59.73
+      }
+    },
+    {
+      "timestamp": "2024-03-18T13:01:02",
+      "speed": 11.99,
+      "state": "Moving",
+      "status": "Error",
+      "position": {
+        "x": 371.98,
+        "y": 195.96,
+        "z": 59.99
+      }
+    },
+    {
+      "timestamp": "2024-03-18T13:01:03",
+      "speed": 10.56,
+      "state": "Moving",
+      "status": "Error",
+      "position": {
+        "x": 383.89,
+        "y": 199.26,
+        "z": 59.53
+      }
+    },
+    {
+      "timestamp": "2024-03-18T13:01:04",
+      "speed": 7.88,
+      "state": "Moving",
+      "status": "Error",
+      "position": {
+        "x": 392.49,
+        "y": 201.45,
+        "z": 60.02
+      }
+    },
+    {
+      "timestamp": "2024-03-18T13:01:05",
+      "speed": 4.97,
+      "state": "Moving",
+      "status": "Error",
+      "position": {
+        "x": 397.79,
+        "y": 204.62,
+        "z": 60.42
+      }
+    },
+    {
+      "timestamp": "2024-03-18T13:01:06",
+      "speed": 3.09,
+      "state": "Moving",
+      "status": "Error",
+      "position": {
+        "x": 400.53,
+        "y": 206.23,
+        "z": 59.74
+      }
+    },
+    {
+      "timestamp": "2024-03-18T13:01:07",
+      "speed": 3.3,
+      "state": "Moving",
+      "status": "Error",
+      "position": {
+        "x": 399.48,
+        "y": 209.49,
+        "z": 59.79
+      }
+    },
+    {
+      "timestamp": "2024-03-18T13:01:08",
+      "speed": 5.4,
+      "state": "Moving",
+      "status": "Error",
+      "position": {
+        "x": 397.04,
+        "y": 211.27,
+        "z": 59.85
+      }
+    },
+    {
+      "timestamp": "2024-03-18T13:01:09",
+      "speed": 8.08,
+      "state": "Moving",
+      "status": "Error",
+      "position": {
+        "x": 390.53,
+        "y": 213.83,
+        "z": 59.92
+      }
+    },
+    {
+      "timestamp": "2024-03-18T13:01:10",
+      "speed": 10.94,
+      "state": "Moving",
+      "status": "Error",
+      "position": {
+        "x": 381.24,
+        "y": 216.58,
+        "z": 60.07
+      }
+    },
+    {
+      "timestamp": "2024-03-18T13:01:11",
+      "speed": 11.96,
+      "state": "Moving",
+      "status": "Error",
+      "position": {
+        "x": 369.68,
+        "y": 218.39,
+        "z": 59.75
+      }
+    },
+    {
+      "timestamp": "2024-03-18T13:01:12",
+      "speed": 12.13,
+      "state": "Moving",
+      "status": "Error",
+      "position": {
+        "x": 357.43,
+        "y": 220.62,
+        "z": 59.42
+      }
+    },
+    {
+      "timestamp": "2024-03-18T13:01:13",
+      "speed": 12.07,
+      "state": "Moving",
+      "status": "Error",
+      "position": {
+        "x": 346.0,
+        "y": 223.4,
+        "z": 59.88
+      }
+    },
+    {
+      "timestamp": "2024-03-18T13:01:14",
+      "speed": 11.94,
+      "state": "Moving",
+      "status": "Error",
+      "position": {
+        "x": 334.02,
+        "y": 225.01,
+        "z": 60.54
+      }
+    },
+    {
+      "timestamp": "2024-03-18T13:01:15",
+      "speed": 11.98,
+      "state": "Moving",
+      "status": "Error",
+      "position": {
+        "x": 322.36,
+        "y": 226.44,
+        "z": 60.17
+      }
+    },
+    {
+      "timestamp": "2024-03-18T13:01:16",
+      "speed": 11.89,
+      "state": "Moving",
+      "status": "Error",
+      "position": {
+        "x": 309.92,
+        "y": 229.03,
+        "z": 59.37
+      }
+    },
+    {
+      "timestamp": "2024-03-18T13:01:17",
+      "speed": 12.1,
+      "state": "Moving",
+      "status": "Error",
+      "position": {
+        "x": 298.58,
+        "y": 230.35,
+        "z": 60.32
+      }
+    },
+    {
+      "timestamp": "2024-03-18T13:01:18",
+      "speed": 11.87,
+      "state": "Moving",
+      "status": "Error",
+      "position": {
+        "x": 286.41,
+        "y": 232.94,
+        "z": 59.58
+      }
+    },
+    {
+      "timestamp": "2024-03-18T13:01:19",
+      "speed": 12.08,
+      "state": "Moving",
+      "status": "Error",
+      "position": {
+        "x": 274.6,
+        "y": 236.52,
+        "z": 59.66
+      }
+    },
+    {
+      "timestamp": "2024-03-18T13:01:20",
+      "speed": 12.07,
+      "state": "Moving",
+      "status": "Error",
+      "position": {
+        "x": 263.58,
+        "y": 237.41,
+        "z": 59.92
+      }
+    },
+    {
+      "timestamp": "2024-03-18T13:01:21",
+      "speed": 12.0,
+      "state": "Moving",
+      "status": "OK",
+      "position": {
+        "x": 251.02,
+        "y": 240.42,
+        "z": 60.64
+      }
+    },
+    {
+      "timestamp": "2024-03-18T13:01:22",
+      "speed": 11.93,
+      "state": "Moving",
+      "status": "OK",
+      "position": {
+        "x": 239.14,
+        "y": 242.29,
+        "z": 60.1
+      }
+    },
+    {
+      "timestamp": "2024-03-18T13:01:23",
+      "speed": 12.11,
+      "state": "Moving",
+      "status": "OK",
+      "position": {
+        "x": 227.6,
+        "y": 244.22,
+        "z": 60.15
+      }
+    },
+    {
+      "timestamp": "2024-03-18T13:01:24",
+      "speed": 12.18,
+      "state": "Moving",
+      "status": "OK",
+      "position": {
+        "x": 215.66,
+        "y": 245.79,
+        "z": 59.52
+      }
+    },
+    {
+      "timestamp": "2024-03-18T13:01:25",
+      "speed": 12.11,
+      "state": "Moving",
+      "status": "OK",
+      "position": {
+        "x": 203.87,
+        "y": 248.28,
+        "z": 60.74
+      }
+    },
+    {
+      "timestamp": "2024-03-18T13:01:26",
+      "speed": 11.95,
+      "state": "Moving",
+      "status": "OK",
+      "position": {
+        "x": 193.13,
+        "y": 250.51,
+        "z": 59.79
+      }
+    },
+    {
+      "timestamp": "2024-03-18T13:01:27",
+      "speed": 12.23,
+      "state": "Moving",
+      "status": "OK",
+      "position": {
+        "x": 180.68,
+        "y": 252.87,
+        "z": 60.12
+      }
+    },
+    {
+      "timestamp": "2024-03-18T13:01:28",
+      "speed": 12.06,
+      "state": "Moving",
+      "status": "OK",
+      "position": {
+        "x": 169.15,
+        "y": 254.4,
+        "z": 60.13
+      }
+    },
+    {
+      "timestamp": "2024-03-18T13:01:29",
+      "speed": 12.15,
+      "state": "Moving",
+      "status": "OK",
+      "position": {
+        "x": 156.51,
+        "y": 257.89,
+        "z": 60.27
+      }
+    },
+    {
+      "timestamp": "2024-03-18T13:01:30",
+      "speed": 11.77,
+      "state": "Moving",
+      "status": "OK",
+      "position": {
+        "x": 144.79,
+        "y": 258.19,
+        "z": 60.23
+      }
+    },
+    {
+      "timestamp": "2024-03-18T13:01:31",
+      "speed": 11.93,
+      "state": "Moving",
+      "status": "OK",
+      "position": {
+        "x": 133.05,
+        "y": 257.6,
+        "z": 60.06
+      }
+    },
+    {
+      "timestamp": "2024-03-18T13:01:32",
+      "speed": 12.12,
+      "state": "Moving",
+      "status": "OK",
+      "position": {
+        "x": 121.54,
+        "y": 254.97,
+        "z": 60.87
+      }
+    },
+    {
+      "timestamp": "2024-03-18T13:01:33",
+      "speed": 11.85,
+      "state": "Moving",
+      "status": "OK",
+      "position": {
+        "x": 109.77,
+        "y": 252.74,
+        "z": 59.86
+      }
+    },
+    {
+      "timestamp": "2024-03-18T13:01:34",
+      "speed": 11.89,
+      "state": "Moving",
+      "status": "OK",
+      "position": {
+        "x": 97.76,
+        "y": 248.25,
+        "z": 60.35
+      }
+    },
+    {
+      "timestamp": "2024-03-18T13:01:35",
+      "speed": 11.87,
+      "state": "Moving",
+      "status": "OK",
+      "position": {
+        "x": 86.09,
+        "y": 245.97,
+        "z": 59.94
+      }
+    },
+    {
+      "timestamp": "2024-03-18T13:01:36",
+      "speed": 11.9,
+      "state": "Moving",
+      "status": "OK",
+      "position": {
+        "x": 74.78,
+        "y": 243.33,
+        "z": 60.19
+      }
+    },
+    {
+      "timestamp": "2024-03-18T13:01:37",
+      "speed": 11.95,
+      "state": "Moving",
+      "status": "OK",
+      "position": {
+        "x": 63.58,
+        "y": 240.58,
+        "z": 60.16
+      }
+    },
+    {
+      "timestamp": "2024-03-18T13:01:38",
+      "speed": 11.93,
+      "state": "Moving",
+      "status": "OK",
+      "position": {
+        "x": 51.23,
+        "y": 238.0,
+        "z": 60.17
+      }
+    },
+    {
+      "timestamp": "2024-03-18T13:01:39",
+      "speed": 12.04,
+      "state": "Moving",
+      "status": "OK",
+      "position": {
+        "x": 39.73,
+        "y": 235.02,
+        "z": 60.6
+      }
+    },
+    {
+      "timestamp": "2024-03-18T13:01:40",
+      "speed": 12.05,
+      "state": "Moving",
+      "status": "OK",
+      "position": {
+        "x": 29.41,
+        "y": 232.01,
+        "z": 60.1
+      }
+    },
+    {
+      "timestamp": "2024-03-18T13:01:41",
+      "speed": 12.13,
+      "state": "Moving",
+      "status": "OK",
+      "position": {
+        "x": 17.18,
+        "y": 228.42,
+        "z": 60.04
+      }
+    },
+    {
+      "timestamp": "2024-03-18T13:01:42",
+      "speed": 12.17,
+      "state": "Moving",
+      "status": "OK",
+      "position": {
+        "x": 4.46,
+        "y": 226.26,
+        "z": 60.22
+      }
+    },
+    {
+      "timestamp": "2024-03-18T13:01:43",
+      "speed": 11.89,
+      "state": "Moving",
+      "status": "OK",
+      "position": {
+        "x": -5.94,
+        "y": 223.29,
+        "z": 60.62
+      }
+    },
+    {
+      "timestamp": "2024-03-18T13:01:44",
+      "speed": 11.1,
+      "state": "Moving",
+      "status": "OK",
+      "position": {
+        "x": -18.11,
+        "y": 220.12,
+        "z": 60.2
+      }
+    },
+    {
+      "timestamp": "2024-03-18T13:01:45",
+      "speed": 10.79,
+      "state": "Moving",
+      "status": "OK",
+      "position": {
+        "x": -26.22,
+        "y": 213.93,
+        "z": 60.22
+      }
+    },
+    {
+      "timestamp": "2024-03-18T13:01:46",
+      "speed": 11.15,
+      "state": "Moving",
+      "status": "OK",
+      "position": {
+        "x": -34.3,
+        "y": 204.63,
+        "z": 59.93
+      }
+    },
+    {
+      "timestamp": "2024-03-18T13:01:47",
+      "speed": 11.89,
+      "state": "Moving",
+      "status": "OK",
+      "position": {
+        "x": -39.1,
+        "y": 194.65,
+        "z": 60.28
+      }
+    },
+    {
+      "timestamp": "2024-03-18T13:01:48",
+      "speed": 11.94,
+      "state": "Moving",
+      "status": "OK",
+      "position": {
+        "x": -43.57,
+        "y": 184.5,
+        "z": 59.81
+      }
+    },
+    {
+      "timestamp": "2024-03-18T13:01:49",
+      "speed": 11.87,
+      "state": "Moving",
+      "status": "OK",
+      "position": {
+        "x": -47.23,
+        "y": 171.81,
+        "z": 60.49
+      }
+    },
+    {
+      "timestamp": "2024-03-18T13:01:50",
+      "speed": 11.93,
+      "state": "Moving",
+      "status": "OK",
+      "position": {
+        "x": -52.37,
+        "y": 160.84,
+        "z": 59.71
+      }
+    },
+    {
+      "timestamp": "2024-03-18T13:01:51",
+      "speed": 12.08,
+      "state": "Moving",
+      "status": "OK",
+      "position": {
+        "x": -56.04,
+        "y": 150.16,
+        "z": 60.41
+      }
+    },
+    {
+      "timestamp": "2024-03-18T13:01:52",
+      "speed": 11.96,
+      "state": "Moving",
+      "status": "OK",
+      "position": {
+        "x": -61.29,
+        "y": 139.02,
+        "z": 59.81
+      }
+    },
+    {
+      "timestamp": "2024-03-18T13:01:53",
+      "speed": 11.79,
+      "state": "Moving",
+      "status": "OK",
+      "position": {
+        "x": -65.12,
+        "y": 127.99,
+        "z": 60.13
+      }
+    },
+    {
+      "timestamp": "2024-03-18T13:01:54",
+      "speed": 11.97,
+      "state": "Moving",
+      "status": "OK",
+      "position": {
+        "x": -69.61,
+        "y": 116.48,
+        "z": 60.56
+      }
+    },
+    {
+      "timestamp": "2024-03-18T13:01:55",
+      "speed": 11.88,
+      "state": "Moving",
+      "status": "OK",
+      "position": {
+        "x": -73.94,
+        "y": 105.5,
+        "z": 60.23
+      }
+    },
+    {
+      "timestamp": "2024-03-18T13:01:56",
+      "speed": 11.19,
+      "state": "Moving",
+      "status": "OK",
+      "position": {
+        "x": -77.74,
+        "y": 94.36,
+        "z": 59.99
+      }
+    },
+    {
+      "timestamp": "2024-03-18T13:01:57",
+      "speed": 10.55,
+      "state": "Moving",
+      "status": "OK",
+      "position": {
+        "x": -78.87,
+        "y": 83.82,
+        "z": 59.6
+      }
+    },
+    {
+      "timestamp": "2024-03-18T13:01:58",
+      "speed": 10.34,
+      "state": "Moving",
+      "status": "OK",
+      "position": {
+        "x": -76.7,
+        "y": 73.03,
+        "z": 59.91
+      }
+    },
+    {
+      "timestamp": "2024-03-18T13:01:59",
+      "speed": 10.96,
+      "state": "Moving",
+      "status": "OK",
+      "position": {
+        "x": -71.9,
+        "y": 64.43,
+        "z": 59.31
+      }
+    },
+    {
+      "timestamp": "2024-03-18T13:02:00",
+      "speed": 12.13,
+      "state": "Moving",
+      "status": "OK",
+      "position": {
+        "x": -64.07,
+        "y": 55.34,
+        "z": 59.86
+      }
+    },
+    {
+      "timestamp": "2024-03-18T13:02:01",
+      "speed": 12.02,
+      "state": "Moving",
+      "status": "OK",
+      "position": {
+        "x": -54.91,
+        "y": 47.62,
+        "z": 59.83
+      }
+    },
+    {
+      "timestamp": "2024-03-18T13:02:02",
+      "speed": 11.97,
+      "state": "Moving",
+      "status": "OK",
+      "position": {
+        "x": -45.21,
+        "y": 40.41,
+        "z": 60.22
+      }
+    },
+    {
+      "timestamp": "2024-03-18T13:02:03",
+      "speed": 11.86,
+      "state": "Moving",
+      "status": "OK",
+      "position": {
+        "x": -36.99,
+        "y": 32.0,
+        "z": 59.6
+      }
+    },
+    {
+      "timestamp": "2024-03-18T13:02:04",
+      "speed": 12.12,
+      "state": "Moving",
+      "status": "OK",
+      "position": {
+        "x": -28.22,
+        "y": 25.01,
+        "z": 59.99
+      }
+    },
+    {
+      "timestamp": "2024-03-18T13:02:05",
+      "speed": 12.22,
+      "state": "Moving",
+      "status": "OK",
+      "position": {
+        "x": -18.65,
+        "y": 16.66,
+        "z": 59.85
+      }
+    },
+    {
+      "timestamp": "2024-03-18T13:02:06",
+      "speed": 9.75,
+      "state": "Moving",
+      "status": "OK",
+      "position": {
+        "x": -10.29,
+        "y": 9.9,
+        "z": 60.75
+      }
+    },
+    {
+      "timestamp": "2024-03-18T13:02:07",
+      "speed": 6.82,
+      "state": "Moving",
+      "status": "OK",
+      "position": {
+        "x": -4.67,
+        "y": 4.32,
+        "z": 60.17
+      }
+    },
+    {
+      "timestamp": "2024-03-18T13:02:08",
+      "speed": 3.6,
+      "state": "Moving",
+      "status": "OK",
+      "position": {
+        "x": -1.45,
+        "y": 0.17,
+        "z": 59.85
+      }
+    },
+    {
+      "timestamp": "2024-03-18T13:02:09",
+      "speed": 0.0,
+      "state": "Hovering",
+      "status": "OK",
+      "position": {
+        "x": -0.8,
+        "y": 0.87,
+        "z": 60.18
+      }
+    },
+    {
+      "timestamp": "2024-03-18T13:02:10",
+      "speed": 0.18,
+      "state": "Hovering",
+      "status": "OK",
+      "position": {
+        "x": -0.54,
+        "y": 1.26,
+        "z": 60.6
+      }
+    },
+    {
+      "timestamp": "2024-03-18T13:02:11",
+      "speed": 0.0,
+      "state": "Hovering",
+      "status": "OK",
+      "position": {
+        "x": -0.71,
+        "y": 0.99,
+        "z": 59.65
+      }
+    },
+    {
+      "timestamp": "2024-03-18T13:02:12",
+      "speed": 2.14,
+      "state": "Landing",
+      "status": "OK",
+      "position": {
+        "x": 0.13,
+        "y": 0.84,
+        "z": 59.18
+      }
+    },
+    {
+      "timestamp": "2024-03-18T13:02:13",
+      "speed": 2.06,
+      "state": "Landing",
+      "status": "OK",
+      "position": {
+        "x": 0.14,
+        "y": 0.58,
+        "z": 57.06
+      }
+    },
+    {
+      "timestamp": "2024-03-18T13:02:14",
+      "speed": 2.25,
+      "state": "Landing",
+      "status": "OK",
+      "position": {
+        "x": -0.17,
+        "y": 0.53,
+        "z": 54.57
+      }
+    },
+    {
+      "timestamp": "2024-03-18T13:02:15",
+      "speed": 2.0,
+      "state": "Landing",
+      "status": "OK",
+      "position": {
+        "x": -0.8,
+        "y": 0.2,
+        "z": 53.15
+      }
+    },
+    {
+      "timestamp": "2024-03-18T13:02:16",
+      "speed": 1.95,
+      "state": "Landing",
+      "status": "OK",
+      "position": {
+        "x": -0.26,
+        "y": 1.4,
+        "z": 51.41
+      }
+    },
+    {
+      "timestamp": "2024-03-18T13:02:17",
+      "speed": 1.91,
+      "state": "Landing",
+      "status": "OK",
+      "position": {
+        "x": -0.32,
+        "y": 0.38,
+        "z": 49.36
+      }
+    },
+    {
+      "timestamp": "2024-03-18T13:02:18",
+      "speed": 2.04,
+      "state": "Landing",
+      "status": "OK",
+      "position": {
+        "x": -0.82,
+        "y": -0.28,
+        "z": 47.13
+      }
+    },
+    {
+      "timestamp": "2024-03-18T13:02:19",
+      "speed": 1.96,
+      "state": "Landing",
+      "status": "OK",
+      "position": {
+        "x": -0.13,
+        "y": 0.72,
+        "z": 44.61
+      }
+    },
+    {
+      "timestamp": "2024-03-18T13:02:20",
+      "speed": 1.86,
+      "state": "Landing",
+      "status": "OK",
+      "position": {
+        "x": -0.83,
+        "y": 0.86,
+        "z": 43.24
+      }
+    },
+    {
+      "timestamp": "2024-03-18T13:02:21",
+      "speed": 2.07,
+      "state": "Landing",
+      "status": "OK",
+      "position": {
+        "x": -0.16,
+        "y": 0.39,
+        "z": 41.01
+      }
+    },
+    {
+      "timestamp": "2024-03-18T13:02:22",
+      "speed": 1.94,
+      "state": "Landing",
+      "status": "OK",
+      "position": {
+        "x": -0.6,
+        "y": 0.2,
+        "z": 38.78
+      }
+    },
+    {
+      "timestamp": "2024-03-18T13:02:23",
+      "speed": 1.98,
+      "state": "Landing",
+      "status": "OK",
+      "position": {
+        "x": -0.76,
+        "y": 0.78,
+        "z": 37.16
+      }
+    },
+    {
+      "timestamp": "2024-03-18T13:02:24",
+      "speed": 2.02,
+      "state": "Landing",
+      "status": "OK",
+      "position": {
+        "x": -0.98,
+        "y": 1.21,
+        "z": 34.99
+      }
+    },
+    {
+      "timestamp": "2024-03-18T13:02:25",
+      "speed": 1.77,
+      "state": "Landing",
+      "status": "OK",
+      "position": {
+        "x": -0.04,
+        "y": 0.97,
+        "z": 32.89
+      }
+    },
+    {
+      "timestamp": "2024-03-18T13:02:26",
+      "speed": 2.15,
+      "state": "Landing",
+      "status": "OK",
+      "position": {
+        "x": -0.41,
+        "y": 0.26,
+        "z": 30.81
+      }
+    },
+    {
+      "timestamp": "2024-03-18T13:02:27",
+      "speed": 2.08,
+      "state": "Landing",
+      "status": "OK",
+      "position": {
+        "x": -0.44,
+        "y": 0.38,
+        "z": 28.73
+      }
+    },
+    {
+      "timestamp": "2024-03-18T13:02:28",
+      "speed": 2.02,
+      "state": "Landing",
+      "status": "OK",
+      "position": {
+        "x": -0.52,
+        "y": 0.56,
+        "z": 27.02
+      }
+    },
+    {
+      "timestamp": "2024-03-18T13:02:29",
+      "speed": 2.02,
+      "state": "Landing",
+      "status": "OK",
+      "position": {
+        "x": -0.1,
+        "y": -0.43,
+        "z": 24.84
+      }
+    },
+    {
+      "timestamp": "2024-03-18T13:02:30",
+      "speed": 1.93,
+      "state": "Landing",
+      "status": "OK",
+      "position": {
+        "x": -0.36,
+        "y": 0.68,
+        "z": 23.24
+      }
+    },
+    {
+      "timestamp": "2024-03-18T13:02:31",
+      "speed": 2.13,
+      "state": "Landing",
+      "status": "OK",
+      "position": {
+        "x": 0.29,
+        "y": 0.09,
+        "z": 21.15
+      }
+    },
+    {
+      "timestamp": "2024-03-18T13:02:32",
+      "speed": 1.98,
+      "state": "Landing",
+      "status": "OK",
+      "position": {
+        "x": -0.62,
+        "y": -0.16,
+        "z": 18.96
+      }
+    },
+    {
+      "timestamp": "2024-03-18T13:02:33",
+      "speed": 2.02,
+      "state": "Landing",
+      "status": "OK",
+      "position": {
+        "x": -0.82,
+        "y": 0.42,
+        "z": 17.03
+      }
+    },
+    {
+      "timestamp": "2024-03-18T13:02:34",
+      "speed": 2.03,
+      "state": "Landing",
+      "status": "OK",
+      "position": {
+        "x": -0.01,
+        "y": 0.42,
+        "z": 14.73
+      }
+    },
+    {
+      "timestamp": "2024-03-18T13:02:35",
+      "speed": 2.12,
+      "state": "Landing",
+      "status": "OK",
+      "position": {
+        "x": -0.28,
+        "y": -0.08,
+        "z": 12.72
+      }
+    },
+    {
+      "timestamp": "2024-03-18T13:02:36",
+      "speed": 1.97,
+      "state": "Landing",
+      "status": "OK",
+      "position": {
+        "x": -1.07,
+        "y": -0.19,
+        "z": 11.19
+      }
+    },
+    {
+      "timestamp": "2024-03-18T13:02:37",
+      "speed": 1.97,
+      "state": "Landing",
+      "status": "OK",
+      "position": {
+        "x": -0.34,
+        "y": 0.5,
+        "z": 8.7
+      }
+    },
+    {
+      "timestamp": "2024-03-18T13:02:38",
+      "speed": 2.01,
+      "state": "Landing",
+      "status": "OK",
+      "position": {
+        "x": 0.11,
+        "y": -0.14,
+        "z": 6.83
+      }
+    },
+    {
+      "timestamp": "2024-03-18T13:02:39",
+      "speed": 2.0,
+      "state": "Landing",
+      "status": "OK",
+      "position": {
+        "x": 0.35,
+        "y": -0.32,
+        "z": 5.14
+      }
+    },
+    {
+      "timestamp": "2024-03-18T13:02:40",
+      "speed": 2.06,
+      "state": "Landing",
+      "status": "OK",
+      "position": {
+        "x": -0.16,
+        "y": -0.5,
+        "z": 3.5
+      }
+    },
+    {
+      "timestamp": "2024-03-18T13:02:41",
+      "speed": 1.94,
+      "state": "Landing",
+      "status": "OK",
+      "position": {
+        "x": 0.11,
+        "y": -0.11,
+        "z": 1.47
+      }
+    },
+    {
+      "timestamp": "2024-03-18T13:02:42",
+      "speed": 0.0,
+      "state": "Idle",
+      "status": "OK",
+      "position": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+      }
+    },
+    {
+      "timestamp": "2024-03-18T13:02:43",
+      "speed": 0.0,
+      "state": "Idle",
+      "status": "OK",
+      "position": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+      }
+    },
+    {
+      "timestamp": "2024-03-18T13:02:44",
+      "speed": 0.0,
+      "state": "Idle",
+      "status": "OK",
+      "position": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+      }
+    }
+  ]
+}
