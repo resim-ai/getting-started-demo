@@ -170,7 +170,7 @@ metrics:
   Cube Path:
     type: test
     description: >
-      Top-down view of the path the cube took, coloured by the stage the
+      Top-down view of the path the cube took, colored by the stage the
       episode was in. The per-axis charts each project this motion onto one
       axis against time, so only this shows the shape of the path.
     query_string: SELECT raw_metric FROM cube_trajectory;
