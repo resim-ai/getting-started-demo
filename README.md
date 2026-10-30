@@ -12,6 +12,7 @@ Once you have gone through the simple Getting Started Guide, you will then be re
 
 ### Contents of this repository
 
+- `aloha/` - The MuJoCo demo used by the [Run your first test batch](https://docs.signalflag.ai/tutorials/first-batch/) tutorial: an ALOHA manipulation task with recorded episodes, a replay image, a GPU simulator image, and the metrics config. See [aloha/README.md](aloha/README.md).
 - `devcontainer/` - This folder contains the devcontainer configuration for testing things in this guide locally.
 - `experience-build/` - This folder contains the experience build that you will use to create your experiences. This `sim_run.py` script is copying over the file from your experience into the output location. Presumably your experience build will create output files based on your systems running against your experiences.
   - `/experiences/` - These experiences are locally stored instead of S3. For your own experiences you may choose to store them in S3. 
